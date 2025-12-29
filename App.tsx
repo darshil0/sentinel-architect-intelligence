@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { geminiService } from './services/geminiService';
 import { 
@@ -29,6 +30,11 @@ const App: React.FC = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+
+  const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setNotification({ message, type });
+  };
 
   const [notification, setNotification] = useState<string | null>(null);
   const [isComplianceApproved, setIsComplianceApproved] = useState(false);
@@ -75,6 +81,7 @@ const App: React.FC = () => {
       setExplanation(result.explanation);
     } catch {
       setExplanation("Architect System Failure: High-integrity model sync failed.");
+      notify("Sync Failed: Model Timeout", "error");
     } finally {
       setIsLoading(false);
     }
@@ -83,9 +90,11 @@ const App: React.FC = () => {
   const handleSaveJob = (jobData: JobMatch) => {
     if (editingJob) {
       setJobs(prev => prev.map(j => j.id === editingJob.id ? jobData : j));
+      notify("Signal Vector Updated");
     } else {
       setJobs(prev => [jobData, ...prev]);
       setSelectedJobId(jobData.id);
+      notify("New Signal Injected");
     }
     setIsModalOpen(false);
     setEditingJob(null);
@@ -96,6 +105,14 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type} 
+          onClose={() => setNotification(null)} 
+        />
+      )}
+
       <header className="h-16 border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 bg-[#0f172a]/95 backdrop-blur-md z-[100]">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -109,7 +126,10 @@ const App: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => { setEditingJob(null); setIsModalOpen(true); }} className="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2">
+          <button 
+            onClick={() => { setEditingJob(null); setIsModalOpen(true); }} 
+            className="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2"
+          >
             Inject Signal
           </button>
           <div className="h-8 w-px bg-slate-800"></div>
@@ -144,7 +164,11 @@ const App: React.FC = () => {
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Vector:</span>
                   <span className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">{selectedJob.company} // {selectedJob.title}</span>
                 </div>
-                <button onClick={handleOptimize} disabled={isLoading} className="bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <button 
+                  onClick={handleOptimize} 
+                  disabled={isLoading} 
+                  className="bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                >
                   {isLoading ? 'Running Compliance Audit...' : 'Sync Optimized Artifact'}
                 </button>
               </div>
@@ -163,7 +187,12 @@ const App: React.FC = () => {
               <div className="bg-slate-900 border border-slate-800/80 rounded-[32px] p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Signal Intelligence</h3>
-                  <button onClick={() => { setEditingJob(selectedJob); setIsModalOpen(true); }} className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">Edit</button>
+                  <button 
+                    onClick={() => { setEditingJob(selectedJob); setIsModalOpen(true); }} 
+                    className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+                  >
+                    Edit
+                  </button>
                 </div>
                 <div className="space-y-5">
                    <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800">

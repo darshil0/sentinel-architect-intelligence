@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { geminiService } from './services/geminiService';
 import { 
@@ -13,6 +14,13 @@ import ScoreBreakdown from './components/ScoreBreakdown';
 import ComplianceFooter from './components/ComplianceFooter';
 import Editor from './components/Editor';
 import ScraperEngine from './components/ScraperEngine';
+import InjectSignalModal from './components/InjectSignalModal';
+import Notification from './components/Notification';
+
+interface NotificationState {
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'kanban' | 'scrapers' | 'blueprints'>('dashboard');
@@ -26,6 +34,11 @@ const App: React.FC = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+
+  const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setNotification({ message, type });
+  };
 
   // Filter jobs based on architect-tier legitimacy (>= 0.7)
   const filteredJobs = useMemo(() => 
@@ -63,46 +76,42 @@ const App: React.FC = () => {
       });
       setGeneratedCode(result.code);
       setExplanation(result.explanation);
+      notify("Architectural Sync Complete", "success");
     } catch (err) {
       setExplanation("Architect System Failure: High-integrity model sync failed.");
+      notify("Sync Failed: Model Timeout", "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveJob = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const highlights = (formData.get('highlights') as string).split(',').map(s => s.trim()).filter(Boolean);
-
-    const jobData: JobMatch = {
-      id: editingJob?.id || `job-${Date.now()}`,
-      title: formData.get('title') as string,
-      company: formData.get('company') as string,
-      location: formData.get('location') as string,
-      score: parseFloat(formData.get('score') as string) || 8.0,
-      legitimacy: parseFloat(formData.get('legitimacy') as string) || 1.0,
-      highlights: highlights,
-      isRemote: formData.get('location')?.toString().toLowerCase().includes('remote') || false,
-      postedDate: editingJob?.postedDate || 'Just now',
-      isVerified: parseFloat(formData.get('legitimacy') as string) >= 0.9,
-      sourceTier: (formData.get('sourceTier') as SourceTier) || 'Tier 1 - Direct',
-      status: editingJob?.status || 'discovery',
-      proof: formData.get('proof') as string || "Manual entry",
-    };
-
+  const handleSaveJob = (jobData: JobMatch) => {
     if (editingJob) {
       setJobs(prev => prev.map(j => j.id === editingJob.id ? jobData : j));
+      notify("Signal Vector Updated");
     } else {
       setJobs(prev => [jobData, ...prev]);
       setSelectedJobId(jobData.id);
+      notify("New Signal Injected");
     }
     setIsModalOpen(false);
     setEditingJob(null);
   };
 
+  const handleApprove = () => {
+    notify("Artifact Released for Submission", "success");
+  };
+
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type} 
+          onClose={() => setNotification(null)} 
+        />
+      )}
+
       <header className="h-16 border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 bg-[#0f172a]/95 backdrop-blur-md z-[100]">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -116,12 +125,19 @@ const App: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => { setEditingJob(null); setIsModalOpen(true); }} className="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2">
+          <button 
+            onClick={() => { setEditingJob(null); setIsModalOpen(true); }} 
+            className="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2"
+          >
             Inject Signal
           </button>
           <div className="h-8 w-px bg-slate-800"></div>
           {['dashboard', 'kanban', 'scrapers', 'blueprints'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab as any)} 
+              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}
+            >
               {tab}
             </button>
           ))}
@@ -151,7 +167,11 @@ const App: React.FC = () => {
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Vector:</span>
                   <span className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">{selectedJob.company} // {selectedJob.title}</span>
                 </div>
-                <button onClick={handleOptimize} disabled={isLoading} className="bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <button 
+                  onClick={handleOptimize} 
+                  disabled={isLoading} 
+                  className="bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                >
                   {isLoading ? 'Running Compliance Audit...' : 'Sync Optimized Artifact'}
                 </button>
               </div>
@@ -170,7 +190,12 @@ const App: React.FC = () => {
               <div className="bg-slate-900 border border-slate-800/80 rounded-[32px] p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Signal Intelligence</h3>
-                  <button onClick={() => { setEditingJob(selectedJob); setIsModalOpen(true); }} className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">Edit</button>
+                  <button 
+                    onClick={() => { setEditingJob(selectedJob); setIsModalOpen(true); }} 
+                    className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+                  >
+                    Edit
+                  </button>
                 </div>
                 <div className="space-y-5">
                    <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800">
@@ -234,29 +259,15 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0f172a]/95 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-          <div className="bg-[#1e293b] border border-slate-700/80 w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden p-10">
-            <h2 className="text-2xl font-black uppercase text-white mb-2">{editingJob ? 'Update Signal' : 'Inject Signal'}</h2>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-8">Architect Review Mandatory Following Injection</p>
-            <form onSubmit={handleSaveJob} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <input name="company" placeholder="Company Name" defaultValue={editingJob?.company} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-                <input name="title" placeholder="Position Title" defaultValue={editingJob?.title} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-              </div>
-              <input name="location" placeholder="Location (e.g., SF / Remote)" defaultValue={editingJob?.location} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-              <textarea name="highlights" placeholder="Semantic Requirements (Comma Separated Tokens)" defaultValue={editingJob?.highlights?.join(', ')} className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600 h-32 resize-none" />
-              <div className="flex gap-4 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-slate-800 text-slate-400 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-700 transition-all">Abort</button>
-                <button type="submit" className="flex-1 py-4 bg-emerald-500 text-slate-950 rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10">Commit Signal</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <InjectSignalModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSave={handleSaveJob} 
+        editingJob={editingJob} 
+      />
 
       <ComplianceFooter 
-        onApprove={() => alert("Tailored artifact released for submission.")} 
+        onApprove={handleApprove} 
         isReady={!!generatedCode} 
         onComplianceChange={setIsComplianceApproved} 
       />

@@ -27,5 +27,14 @@ A high-integrity, automated system designed for **Senior SDETs** and **Test Arch
 - [Recruiter Strategy](RECRUITER_STRATEGY.md) - Persona-based engagement.
 - [Test Cases](TEST_CASES.md) - System validation scenarios.
 
+## 📜 Versioning and Changelog
+
+### v1.1.0 - Architectural Hardening
+- **Refactor**: "Inject Signal" modal extracted to dedicated component for improved maintainability.
+- **Hook Strategy**: Implemented reusable `useForm` hook for standardized form handling across modules.
+- **UI/UX Enhancement**: Replaced native `alert()` with a modern, architect-themed `Notification` toast system.
+- **Stability Fix**: Resolved z-index conflicts between Compliance Footer and Modal overlays.
+- **Optimization**: Cleaned up `App.tsx` state management logic.
+
 ---
 *Authorized for Lead Architect use only. All artifacts are compliance-locked and AI-verified.*

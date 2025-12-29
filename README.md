@@ -1,6 +1,5 @@
 ## QA Career Intelligence: CHANGELOG v1.2.0
 
-**Production Release: December 28, 2025**
 
 ### 🎯 **New Features & Enhancements**
 

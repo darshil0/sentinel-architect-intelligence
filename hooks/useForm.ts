@@ -6,11 +6,11 @@ export const useForm = <T extends Record<string, unknown>>(initialState: T) => {
   const handleChange = useCallback((
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value, type, checked } = e.target as any;
+    const { name, value, type } = e.target;
     
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
   }, []);
 

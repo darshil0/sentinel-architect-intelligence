@@ -1,126 +1,82 @@
-## QA Career Intelligence: Architect Command Center (v1.4.0) - FULLY CORRECTED
+# QA Career Intelligence: Architect Command Center
 
-**Production Release: December 28, 2025** ✅
+This project is a sophisticated tool designed to help QA professionals manage their careers by optimizing resumes, tracking job applications, and leveraging AI to gain a competitive edge.
 
-### 🎯 **Core System Modules** (All Fixed & Production-Ready)
+## Core Features
 
-```
-├── App.tsx                          ✅ Fixed: Null safety, useCallback, a11y
-├── constants.ts                     ✅ Fixed: as const, complete JobMatch, regex
-├── InjectSignalModal.tsx            ✅ Fixed: Validation, useCallback deps, form
-├── Notification.tsx                 ✅ Fixed: Manual dismiss, ARIA-live, cleanup
-├── eslint.config.js                 ✅ Fixed: Flat config v9+, no ecmaFeatures
-├── useForm.ts                       ✅ Fixed: Checkbox/select, generics, perf
-└── FastAPI Blueprint                ✅ Fixed: Regex escaping, matching logic
-```
+- **Resume-Job Description Diffing**: Visually compare your master resume against a job description to identify gaps and areas for improvement.
+- **AI-Powered Optimization**: Utilize the Gemini API to generate optimized resume artifacts tailored to specific job requirements.
+- **Job Application Tracking**: Manage your job application pipeline with a Kanban board, tracking your progress from discovery to offer.
+- **Signal Injection**: Easily add new job opportunities (signals) to your dashboard for tracking and optimization.
 
-### 🐛 **ALL ISSUES RESOLVED** (Zero Remaining)
+## Technical Stack
 
-| **Issue** | **Status** | **Root Cause** | **Fix** |
-|-----------|------------|----------------|---------|
-| Regex double-escaping (Python) | ✅ | `r'\\b'` in template | Proper raw string: `r"\b[\w...]"` |
-| `selectedJob` null crashes | ✅ | No optional chaining | `selectedJob?.company ?? ''` |
-| ESLint `ecmaFeatures` deprecated | ✅ | Flat config v9+ | Removed entirely |
-| Modal infinite re-renders | ✅ | `formData` in deps | Stable deps only |
-| Missing `baseSalary/personaHint` | ✅ | Incomplete JobMatch | Full defaults added |
-| Notification no dismiss | ✅ | Auto-only | X button + proper cleanup |
-| Form no validation | ✅ | Client-side missing | `.trim()` + highlights check |
+- **Frontend**: React, TypeScript, Tailwind CSS, Vite
+- **Backend**: Node.js, Express
+- **AI Integration**: Google Gemini API
+- **Linting**: ESLint
+- **Testing**: Vitest (to be implemented)
 
-### 🔧 **Code Health Metrics** (v1.4.0 FINAL)
+## Getting Started
 
-```
-📊 PRODUCTION METRICS
-├── TypeScript: 0 errors / 100% coverage
-├── ESLint: 0 violations / 450 rules enforced
-├── Performance: 94% optimized (full memoization)
-├── Bundle: 148kb gzipped (stable)
-├── Accessibility: AAA compliant
-├── Components: 100% reusable/testable
-└── Deployment: Vercel + Railway ready
-```
+### Prerequisites
 
-### 🚀 **DEPLOYMENT GUIDE** (Copy-Paste Ready)
+- Node.js (v18 or higher)
+- npm or yarn
+- A Google Gemini API key
 
-```bash
-# 1. Production Build
-npm install
-npm run lint -- --fix
-npm run type-check
+### Installation
 
-# 2. Vercel Frontend
-npm run build
-vercel --prod
+1.  **Clone the repository:**
 
-# 3. Railway Backend (FastAPI)
-mkdir backend && cd backend
-# Copy ARCHITECT_OPTIMIZER_ENDPOINT → main.py
-railway up
+    ```bash
+    git clone https://github.com/your-username/your-repo-name.git
+    cd your-repo-name
+    ```
 
-# 4. System Status
-✅ All green. Zero issues remaining.
-```
+2.  **Install dependencies:**
 
-### 🛠️ **Technical Stack** (ALL VERIFIED)
+    ```bash
+    npm install
+    ```
 
-```
-FRONTEND:    React 19.0.0 + Tailwind 3.4.13 + TypeScript 5.5
-ESLINT:      v9.11.0 flat config + 450 rules
-INTELLIGENCE: Gemini 3 Pro @ temp 0.2
-BACKEND:     FastAPI 0.115 + Pydantic v2
-DEPLOYMENT:  Vercel (FE) + Railway (BE)
-```
+3.  **Set up environment variables:**
 
-### 📄 **Documentation Status** (SYNCED)
+    Create a `.env` file in the root of the project and add your Gemini API key and the API URL:
 
-```
-✓ SYSTEM_ARCHITECTURE.md     → Updated v1.4.0 pipelines
-✓ UI_SPECIFICATIONS.md       → AAA a11y patterns
-✓ DEPLOYMENT_GUIDE.md       → Copy-paste scripts above
-✓ RECRUITER_STRATEGY.md     → Persona templates
-✓ TEST_CASES.md             → 100% coverage scenarios
-```
+    ```
+    GEMINI_API_KEY=your_gemini_api_key
+    VITE_API_URL=http://localhost:3001
+    ```
 
-### 🎖️ **LEAD ARCHITECT CERTIFICATION** (v1.4.0 FINAL)
+4.  **Run the application:**
 
-```
-✓ STRICT_SUBSET_LOGIC: PASS (Zero hallucinations)
-✓ TIER_1_COVERAGE: 100% (Anthropic/Stripe/OpenAI)
-✓ TYPE_SAFETY: 100% (as const + generics)
-✓ PERFORMANCE: 94% (useCallback everywhere)
-✓ ACCESSIBILITY: AAA (ARIA + keyboard complete)
-✓ VALIDATION: Full client/server (no bad data)
-✓ DEPLOYMENT: ONE_COMMAND (scripts above)
+    In one terminal, start the backend server:
 
-STATUS: FULLY_PRODUCTION_READY
-DEPLOY: IMMEDIATE
-```
+    ```bash
+    node server.js
+    ```
 
-### 📦 **FINAL DEPENDENCIES** (All Latest Stable)
+    In another terminal, start the frontend development server:
 
-```
-✅ react@19.0.0
-✅ @types/react@19.0.0
-✅ eslint@9.11.0
-✅ typescript-eslint@8.7.0
-✅ eslint-plugin-import@2.29.1
-✅ tailwindcss@3.4.13
-✅ vite@6.0.0
-```
+    ```bash
+    npm run dev
+    ```
 
-***
+    The application will be available at `http://localhost:3000`.
 
-**ALL ISSUES FIXED. SYSTEM SYNCHRONIZED. PRODUCTION READY.**
+## Known Issues
 
-```
-DEPLOYMENT COMMAND:
-npm run build && vercel --prod
+- **Missing Tests**: The project currently lacks a comprehensive test suite. Adding unit, integration, and end-to-end tests is a high priority.
+- **Error Handling**: While some error handling is in place, it can be improved to provide more granular feedback to the user.
+- **Incomplete CI/CD**: The project lacks a continuous integration and deployment pipeline, which is essential for maintaining code quality and automating releases.
+- **No Versioning and Changelog**: A formal versioning system and changelog are needed to track fixes, new features, and breaking changes.
+- **Absence of a Logger**: There is no structured logger to record important events and errors, which makes debugging and monitoring more difficult.
 
-BACKEND (Railway):
-Copy ARCHITECT_OPTIMIZER_ENDPOINT → main.py
-railway up
+## Contributing
 
-STATUS: NOMINAL ✅
-AUTH: LEAD_ARCHITECT_VERIFIED
-```
+Contributions are welcome! If you'd like to help improve the Architect Command Center, please feel free to fork the repository, make your changes, and submit a pull request.
 
-*Zero outstanding issues. Full stack productionized. Deploy immediately.*
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.

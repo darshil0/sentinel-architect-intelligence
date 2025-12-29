@@ -1,4 +1,4 @@
-import { JobMatch, OutreachTemplate, MasterResume } from "./types";
+import { Scenario, JobMatch, OutreachTemplate, MasterResume } from "./types";
 
 export const MASTER_RESUME_JSON: MasterResume = {
   personalInfo: {
@@ -117,7 +117,8 @@ export const SYSTEM_PROMPT_TEMPLATE = `
 Act as the Lead Architect. Generate the production-ready FastAPI logic for the optimization endpoint.
 CONSTRAINTS: 
 - Use Temperature 0.2.
-- Enforce validate_no_hallucinations (Tailored content MUST be a subset of the Master Resume inventory).
+- Enforce the Zero-Hallucination Lock: The tailored artifact MUST be a strict semantic subset of the Master Resume inventory.
+- Reference the DiscoveryOrchestrator for signal validation and the ResumeOptimizer for tailoring.
 
 JD: {{SCENARIO}}
 MASTER_RESUME: {{CONTEXT}}
@@ -162,19 +163,20 @@ def audit_signal_integrity(description: str, posted_date: str) -> float:
 export const ARCHITECT_OPTIMIZER_ENDPOINT = `
 import re
 import logging
-from typing import List, Dict, Any, Set, Optional
-from fastapi import FastAPI, HTTPException, Body
+from typing import List, Dict, Set, Optional, Any
+from fastapi import FastAPI, HTTPException, Body, status
 from pydantic import BaseModel, Field
 
 # --- LEAD ARCHITECT ARCHITECTURE ---
-# Documentation Reference: ResumeOptimizer & DiscoveryOrchestrator Modules
+# Documentation Reference: Sentinel-QA-Architect-v1
+# Logic: Zero-Hallucination Resume Optimization (Subset Enforcement)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("LeadArchitect.Optimizer")
 
 app = FastAPI(
-    title="Sentinel Architect: Recruitment Intelligence Node",
-    description="High-integrity resume optimization node with zero-hallucination enforcement."
+    title="QA Career Intelligence: Optimization Node",
+    description="Principal endpoint for high-integrity SDET resume tailoring."
 )
 
 class ExperienceEntry(BaseModel):
@@ -205,84 +207,93 @@ class DiffView(BaseModel):
     integrity_verified: bool = True
     hallucination_audit_passed: bool = True
 
+class DiscoveryOrchestrator:
+    """
+    Handles signal ingestion and validates recruitment intent.
+    """
+    @staticmethod
+    def audit_signal(jd: JobDescription) -> float:
+        """Assigns a legitimacy score based on technical depth and source."""
+        if len(jd.requirements) < 3:
+            return 0.4
+        return 0.95
+
 class ResumeOptimizer:
     """
-    Lead Architect implementation of the ResumeOptimizer class.
-    Ensures that any generated content is a strict semantic subset of the Master Resume.
+    Principal Architect implementation for zero-hallucination tailoring.
     """
     def __init__(self, master: MasterResume):
         self.master = master
         self.inventory = self._build_semantic_inventory()
 
     def _build_semantic_inventory(self) -> Set[str]:
-        """Flatten master resume into a searchable token set for integrity checks."""
-        source_text = [
+        """Flatten master resume into a searchable token set for integrity audit."""
+        source_data = [
             self.master.summary,
             " ".join(self.master.coreCompetencies),
             " ".join([exp.role for exp in self.master.experience]),
             " ".join([" ".join(exp.achievements) for exp in self.master.experience])
         ]
-        # Regex to capture technical tokens including +, #, .
-        tokens = re.findall(r'\\b[\\w\\d\\.\\-\\+#]{2,}\\b', " ".join(source_text).lower())
-        return set(tokens)
+        # Precise extraction of technical tokens including C++, .NET, FastAPI, etc.
+        text_stream = " ".join(source_data).lower()
+        return set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{2,}\\b', text_stream))
 
     def validate_no_hallucinations(self, tailored_text: str) -> List[str]:
         """
         STRICT COMPLIANCE CHECK:
-        Validates that every word in the tailored output exists in the master inventory.
+        Returns all tokens in tailored_text that do NOT exist in the master inventory.
         """
         tailored_tokens = set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{2,}\\b', tailored_text.lower()))
-        # Filter out common stop words or prepositions if necessary, 
-        # but for Lead Architect precision, we audit everything > 2 chars.
         violations = [t for t in tailored_tokens if t not in self.inventory]
         return violations
 
-@app.post("/optimize-resume", response_model=DiffView)
-async def optimize_resume(
-    master: MasterResume = Body(..., description="The source of truth for all career tokens."),
-    jd: JobDescription = Body(..., description="Target signal from DiscoveryOrchestrator.")
+@app.post("/optimize", response_model=DiffView, status_code=status.HTTP_200_OK)
+async def optimize_endpoint(
+    master: MasterResume = Body(..., description="The verified Master Source of Truth."),
+    jd: JobDescription = Body(..., description="High-legitimacy job signal.")
 ):
     """
-    Principal Architect Endpoint: Generates a DiffView artifact.
-    Orchestrates the intersection between JD requirements and Master Inventory.
+    Lead Architect Implementation: Generates a tailored artifact with subset enforcement.
     """
-    logger.info(f"Initiating optimization for signal: {jd.id} ({jd.company})")
+    logger.info(f"Initiating Architect Sync for {jd.company} | Signal: {jd.id}")
     
+    # 1. Orchestration Phase: Signal Legitimacy Audit
+    if DiscoveryOrchestrator.audit_signal(jd) < 0.7:
+        raise HTTPException(status_code=400, detail="Low-integrity signal. Tailoring aborted.")
+
     optimizer = ResumeOptimizer(master)
     
-    # 1. Identify Direct Token Intersection
-    matches = [req for req in jd.requirements if req.lower() in optimizer.inventory]
+    # 2. Optimization Phase: Token Intersection Analysis
+    # Identify which JD requirements are verified in our Master Inventory
+    intersection = [req for req in jd.requirements if req.lower() in optimizer.inventory]
+    gaps = [req for req in jd.requirements if req.lower() not in optimizer.inventory]
     
-    # 2. Architect the Tailored Summary (Simulated LLM call with strict subset rules)
-    # In production, this prompt is sent to Gemini 3 Pro with Temp 0.2
+    # 3. Tailoring Phase: Constructing the Subset Artifact
+    # (In a real system, this logic is augmented by Gemini 3 Pro @ Temp 0.2)
     tailored_summary = (
-        f"Senior Test Architect with verified mastery in {', '.join(matches[:5])}. "
-        f"Extensive history in {master.experience[0].company} implementing quality gates."
+        f"Senior SDET with verified mastery in {', '.join(intersection[:5])}. "
+        f"Built high-scale automation at {master.experience[0].company} using a toolset derived "
+        f"from your core requirements."
     )
     
-    # 3. Mandatory Hallucination Audit
+    # 4. Mandatory Integrity Audit: Hallucination Lock
     violations = optimizer.validate_no_hallucinations(tailored_summary)
-    
     if violations:
-        logger.error(f"Integrity Breach! Hallucination detected: {violations}")
+        logger.error(f"INTEGRITY BREACH: Model attempted fabrication. Violations: {violations}")
         raise HTTPException(
-            status_code=422, 
+            status_code=422,
             detail={
-                "error": "Semantic Integrity Breach", 
-                "message": "AI attempted to inject unverified tokens into artifact.",
-                "violating_tokens": violations
+                "error": "Semantic Integrity Breach",
+                "violating_tokens": violations,
+                "resolution": "Artifact regeneration required with stricter subset constraints."
             }
         )
-    
-    # 4. Return the DiffView Object
+
     return DiffView(
         original_summary=master.summary,
         tailored_summary=tailored_summary,
-        rationale=f"Successfully mapped {len(matches)} competencies from Master Source.",
-        gaps_detected=[r for r in jd.requirements if r.lower() not in optimizer.inventory],
+        rationale=f"Successfully mapped {len(intersection)} competencies from Master Source.",
+        gaps_detected=gaps,
         hallucination_audit_passed=True
     )
-
-# Reference: DiscoveryOrchestrator Class
-# Usage in pipeline: ingest_signal -> audit_legitimacy -> optimize_resume -> release_artifact
 `;

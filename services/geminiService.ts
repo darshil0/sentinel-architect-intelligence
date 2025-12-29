@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { GenerationRequest, SystemContext, MasterResume } from "../types";
+import { GenerationRequest, SystemContext, MasterResume, JobMatch } from "../types";
 import { SYSTEM_PROMPT_TEMPLATE } from "../constants";
 
 export class GeminiService {
@@ -45,6 +45,45 @@ export class GeminiService {
     } catch (error) {
       console.error("Architectural Sync Failure:", error);
       throw new Error("System Alert: High-integrity model sync failed. Verify API status and connectivity.");
+    }
+  }
+
+  /**
+   * Generates a professional follow-up email draft for a stale application.
+   */
+  async generateFollowUpEmail(master: MasterResume, job: JobMatch): Promise<string> {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    const prompt = `
+      Act as the Lead Architect Alex Architect. 
+      Generate a professional, high-signal follow-up email for the following stale application.
+      
+      CONTEXT:
+      - Job: ${job.title} at ${job.company}
+      - Highlights: ${job.highlights.join(", ")}
+      - Master Profile: ${master.summary}
+      
+      GOAL: 
+      - Re-express interest in the mission.
+      - Briefly re-highlight alignment with core requirements.
+      - Professional yet assertive tone of a Senior Test Architect.
+      
+      No hallucinations. Use only provided context.
+    `;
+
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-pro-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          temperature: 0.3,
+          thinkingConfig: { thinkingBudget: 10000 }
+        }
+      });
+      return response.text || "Drafting failed. System integrity check required.";
+    } catch (error) {
+      console.error("Follow-up Generation Failure:", error);
+      throw new Error("Architectural Breach: Failed to generate follow-up draft.");
     }
   }
 

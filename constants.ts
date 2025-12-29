@@ -81,7 +81,8 @@ export const MOCK_JOBS: JobMatch[] = [
     postedDate: "3d ago",
     isVerified: true,
     sourceTier: "Tier 1 - Direct",
-    status: "tailoring",
+    status: "submitted",
+    submissionDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
     personaHint: "frontier",
     proof: "Verified via OpenAI Greenhouse instance.",
   }

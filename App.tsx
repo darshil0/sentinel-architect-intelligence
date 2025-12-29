@@ -85,6 +85,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleFollowUpRequest = async (job: JobMatch) => {
+    setIsLoading(true);
+    notify("Drafting Follow-up Artifact...", "info");
+    try {
+      const draft = await geminiService.generateFollowUpEmail(masterResume, job);
+      setGeneratedCode(draft);
+      setExplanation(`System Audit: Professional follow-up draft generated for stale signal at ${job.company}. Direct requirement mapping enforced.`);
+      setSelectedJobId(job.id);
+      setActiveTab('dashboard');
+      notify("Follow-up Draft Sync Complete", "success");
+    } catch (err) {
+      notify("Follow-up Sync Failed", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSaveJob = (jobData: JobMatch) => {
     if (editingJob) {
       setJobs(prev => prev.map(j => j.id === editingJob.id ? jobData : j));
@@ -153,7 +170,7 @@ const App: React.FC = () => {
               <div className="flex-grow overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-8">
                 {[...filteredJobs].sort((a,b) => b.score - a.score).map(job => (
                   <div key={job.id} onClick={() => setSelectedJobId(job.id)}>
-                    <JobCard job={job} isActive={selectedJobId === job.id} />
+                    <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUpRequest} />
                   </div>
                 ))}
               </div>
@@ -220,7 +237,7 @@ const App: React.FC = () => {
                 <div className="flex-grow space-y-4 overflow-y-auto custom-scrollbar pr-1">
                   {filteredJobs.filter(j => j.status === status).map(job => (
                     <div key={job.id} onClick={() => setSelectedJobId(job.id)}>
-                      <JobCard job={job} isActive={selectedJobId === job.id} />
+                      <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUpRequest} />
                     </div>
                   ))}
                 </div>

@@ -4,9 +4,10 @@ import { JobMatch } from '../types';
 interface JobCardProps {
   job: JobMatch;
   isActive?: boolean;
+  onFollowUp?: (job: JobMatch) => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ job, isActive = false }) => {
+const JobCard: React.FC<JobCardProps> = ({ job, isActive = false, onFollowUp }) => {
   const isHighMatch = job.score >= 9.0;
 
   const isStale = useMemo(() => {
@@ -75,36 +76,47 @@ const JobCard: React.FC<JobCardProps> = ({ job, isActive = false }) => {
         ))}
       </div>
 
-      <div className="mt-3 pt-3 border-t border-slate-800/50 flex justify-between items-center">
-        <div className="flex flex-col">
-          <span className="text-[9px] text-slate-600 font-bold uppercase italic">
-            {job.postedDate}
-          </span>
-          {job.submissionDate && (
-            <span
-              className={`text-[8px] font-black uppercase tracking-tighter ${
-                isStale ? 'text-amber-500/70' : 'text-slate-500'
-              }`}
-            >
-              Sub:{' '}
-              {new Date(job.submissionDate).toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })}
+      <div className="mt-3 pt-3 border-t border-slate-800/50 flex flex-col gap-3">
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-[9px] text-slate-600 font-bold uppercase italic">
+              {job.postedDate}
             </span>
+            {job.submissionDate && (
+              <span
+                className={`text-[8px] font-black uppercase tracking-tighter ${
+                  isStale ? 'text-amber-500/70' : 'text-slate-500'
+                }`}
+              >
+                Sub:{' '}
+                {new Date(job.submissionDate).toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
+            )}
+          </div>
+
+          {job.legitimacy > 0.9 && !isStale && (
+            <div className="relative group/legit">
+              <span className="text-[8px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 font-black uppercase tracking-widest">
+                Verified
+              </span>
+            </div>
           )}
         </div>
 
-        {job.legitimacy > 0.9 && !isStale && (
-          <div className="relative group/legit">
-            <span className="text-[8px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 font-black uppercase tracking-widest">
-              Verified
-            </span>
-            <div className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-slate-950 border border-slate-800 text-[9px] text-slate-400 invisible group-hover/legit:visible rounded shadow-2xl z-[100] font-medium leading-relaxed">
-              Legitimacy Score: {(job.legitimacy * 10).toFixed(1)}/10. {job.proof}
-            </div>
-          </div>
+        {isStale && job.status === 'submitted' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onFollowUp?.(job);
+            }}
+            className="w-full py-2 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/10"
+          >
+            Generate Follow-up Draft
+          </button>
         )}
       </div>
     </div>

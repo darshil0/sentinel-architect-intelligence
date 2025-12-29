@@ -87,14 +87,14 @@ export const MOCK_JOBS: JobMatch[] = [
     proof: "Verified via OpenAI Greenhouse instance.",
     baseSalary: 195000,
   }
-];
+] as const;
 
 export const INTERVIEW_BRIEFS: Record<string, string[]> = {
   Anthropic: ["Bias Detection Evals", "Non-deterministic Testing", "Safety-First CI/CD"],
   Stripe: ["Idempotency Testing", "Financial Schema Evolution", "Scale & Latency Metrics"],
   OpenAI: ["LLM Guardrails", "Evaluation Frameworks", "RAG Validation"],
   Default: ["Testing Framework Architecture", "Quality Guardrails", "Automation ROI"],
-};
+} as const;
 
 export const OUTREACH_TEMPLATES: OutreachTemplate[] = [
   {
@@ -110,8 +110,8 @@ export const OUTREACH_TEMPLATES: OutreachTemplate[] = [
     target: "Recruiter",
     persona: "frontier",
     content: "Hi [Name], Your [Job Title] role at [Company] caught my attention. I've architected LLM evaluation pipelines at Frontier AI...",
-  }
-];
+  },
+] as const;
 
 export const DEFAULT_SYSTEM_CONTEXT = {
   resumeOptimizerDocs: "Strict subset logic. No hallucination allowed.",
@@ -131,7 +131,7 @@ CONSTRAINTS:
 
 JD: {{SCENARIO}}
 MASTER_RESUME: {{CONTEXT}}
-`;
+` as const;
 
 export const ARCHITECT_MASTER_BLUEPRINT = `
 # LEAD ARCHITECT - SYSTEM MASTER BLUEPRINT 2025
@@ -178,7 +178,7 @@ from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel, Field
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("LeadArchitect")
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="QA Career Intelligence Optimizer", version="1.0.0")
 
@@ -222,10 +222,10 @@ class ResumeOptimizer:
             " ".join([" ".join(exp.achievements) for exp in self.master.experience])
         ]
         full_text = " ".join(components).lower()
-        return set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{3,}\\b', full_text))
+        return set(re.findall(r"\\b[\\w\\d\\.\\-\\+#]{3,}\\b", full_text))
 
     def validate_no_hallucinations(self, tailored_text: str) -> List[str]:
-        tailored_tokens = set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{3,}\\b', tailored_text.lower()))
+        tailored_tokens = set(re.findall(r"\\b[\\w\\d\\.\\-\\+#]{3,}\\b", tailored_text.lower()))
         return [t for t in tailored_tokens if t not in self.inventory]
 
 @app.post("/optimize", response_model=DiffView)
@@ -238,7 +238,7 @@ async def optimize_resume(master: MasterResume = Body(..., embed=True), jd: JobD
         raise HTTPException(status_code=422, detail={"error": "Hallucination Detected", "tokens": hallucinations})
     return DiffView(
         original_summary=master.summary,
-        tailored_summary=tailed,
+        tailored_summary=tailored,
         rationale=f"Matched {len(matches)} competencies.",
         gaps_detected=[r for r in jd.requirements if not any(term in r.lower() for term in optimizer.inventory)],
         integrity_verified=len(hallucinations) == 0

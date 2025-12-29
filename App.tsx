@@ -15,6 +15,7 @@ import Editor from './components/Editor';
 import ScraperEngine from './components/ScraperEngine';
 import InjectSignalModal from './components/InjectSignalModal';
 import Notification from './components/Notification';
+import ResumeParser from './components/ResumeParser';
 
 type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
 
@@ -41,12 +42,10 @@ const App: React.FC = () => {
     setNotification({ message, type });
   };
 
-  // Filter jobs based on architect-tier legitimacy (>= 0.7)
   const filteredJobs = useMemo(() => 
     jobs.filter(j => j.legitimacy >= 0.7), 
   [jobs]);
 
-  // Ensure selection always points to a valid filtered job
   useEffect(() => {
     if (!filteredJobs.find(j => j.id === selectedJobId) && filteredJobs.length > 0) {
       setSelectedJobId(filteredJobs[0].id);
@@ -101,6 +100,11 @@ const App: React.FC = () => {
 
   const handleApproveArtifact = () => {
     notify("Tailored artifact released for submission.", "success");
+  };
+
+  const handleResumeParsed = (parsedResume: MasterResume) => {
+    setMasterResume(parsedResume);
+    notify("Master Source updated via semantic ingestion.", "success");
   };
 
   const TABS: Tab[] = ['dashboard', 'kanban', 'scrapers', 'blueprints'];
@@ -228,7 +232,12 @@ const App: React.FC = () => {
         {activeTab === 'scrapers' && <ScraperEngine />}
         {activeTab === 'blueprints' && (
           <div className="flex-grow grid grid-cols-2 gap-6 overflow-hidden">
-            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch {} }} />
+            <div className="flex flex-col gap-6 overflow-hidden">
+              <ResumeParser onParsed={handleResumeParsed} />
+              <div className="flex-grow overflow-hidden">
+                <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch {} }} />
+              </div>
+            </div>
             <div className="flex flex-col gap-6 overflow-hidden">
                <Editor label="FastAPI Principal Blueprint" value={ARCHITECT_OPTIMIZER_ENDPOINT} readOnly />
                <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-4">

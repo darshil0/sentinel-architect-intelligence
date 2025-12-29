@@ -27,14 +27,28 @@ A high-integrity, automated system designed for **Senior SDETs** and **Test Arch
 - [Recruiter Strategy](RECRUITER_STRATEGY.md) - Persona-based engagement.
 - [Test Cases](TEST_CASES.md) - System validation scenarios.
 
-## 📜 Versioning and Changelog
+---
 
-### v1.1.0 - Architectural Hardening
-- **Refactor**: "Inject Signal" modal extracted to dedicated component for improved maintainability.
-- **Hook Strategy**: Implemented reusable `useForm` hook for standardized form handling across modules.
-- **UI/UX Enhancement**: Replaced native `alert()` with a modern, architect-themed `Notification` toast system.
-- **Stability Fix**: Resolved z-index conflicts between Compliance Footer and Modal overlays.
-- **Optimization**: Cleaned up `App.tsx` state management logic.
+## 📝 Versioning and Changelog
+
+### Version 1.1.0 (Latest)
+
+- **Dependencies & Tooling:**
+  - Updated all outdated dependencies to their latest stable versions.
+  - Added `lint` and `test` scripts to `package.json` to enforce code quality and enable testing.
+  - Configured ESLint with a new `eslint.config.js` file and added recommended rule sets.
+
+- **Bug Fixes & Performance:**
+  - Fixed React `key` prop warnings by adding unique and stable keys to all lists of elements.
+  - Resolved various linter-flagged issues, including unused variables and `any` type casting.
+
+- **Refactoring & Maintainability:**
+  - Extracted the "Inject Signal" modal into its own reusable component (`InjectSignalModal.tsx`).
+  - Replaced the `alert()` call in the `ComplianceFooter` component with a more user-friendly notification system.
+  - Enhanced form handling in the "Inject Signal" modal by creating a reusable `useForm` hook.
+
+- **Observability:**
+  - Implemented a structured, client-side logging system using `pino-js` to provide detailed insight into application behavior, API calls, and state changes.
 
 ---
 *Authorized for Lead Architect use only. All artifacts are compliance-locked and AI-verified.*

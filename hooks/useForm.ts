@@ -1,37 +1,35 @@
+import { useState, useCallback, ChangeEvent } from 'react';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+export const useForm = <T extends Record<string, unknown>>(initialState: T) => {
+  const [formData, setFormData] = useState<T>(initialState);
 
-interface UseFormProps<T> {
-  initialValues: T;
-  onSubmit: (values: T) => void;
-}
+  const handleChange = useCallback((
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type, checked } = e.target as any;
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  }, []);
 
-export const useForm = <T extends Record<string, any>>({ initialValues, onSubmit }: UseFormProps<T>) => {
-  const [values, setValues] = useState<T>(initialValues);
+  const resetForm = useCallback(() => {
+    setFormData(initialState);
+  }, [initialState]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const val = type === 'number' ? parseFloat(value) : value;
-    setValues((prev) => ({ ...prev, [name]: val }));
-  };
-
-  const handleManualChange = (name: keyof T, value: any) => {
-    setValues((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    onSubmit(values);
-  };
-
-  const resetForm = () => setValues(initialValues);
+  const setFieldValue = useCallback((
+    name: keyof T,
+    value: T[keyof T]
+  ) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   return {
-    values,
-    setValues,
+    formData,
     handleChange,
-    handleManualChange,
-    handleSubmit,
     resetForm,
+    setFormData,
+    setFieldValue, // Programmatic updates
   };
 };

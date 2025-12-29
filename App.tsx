@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { geminiService } from './services/geminiService';
-import { 
-  DEFAULT_SYSTEM_CONTEXT, 
-  MOCK_JOBS, 
+import {
+  DEFAULT_SYSTEM_CONTEXT,
+  MOCK_JOBS,
   MASTER_RESUME_JSON,
-  ARCHITECT_OPTIMIZER_ENDPOINT
+  ARCHITECT_OPTIMIZER_ENDPOINT,
 } from './constants';
 import { JobMatch, MasterResume } from './types';
 import JobCard from './components/JobCard';
@@ -23,13 +23,12 @@ type JobStatus = 'discovery' | 'tailoring' | 'submitted' | 'interview' | 'offer'
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [jobs, setJobs] = useState<JobMatch[]>(MOCK_JOBS ?? []);
-  const initialJobId = (MOCK_JOBS && MOCK_JOBS[0]?.id) || '';
-  const [selectedJobId, setSelectedJobId] = useState<string>(initialJobId);
+  const [selectedJobId, setSelectedJobId] = useState<string>('');
   const [masterResume, setMasterResume] = useState<MasterResume>(MASTER_RESUME_JSON);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
   const [explanation, setExplanation] = useState('');
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
@@ -41,21 +40,28 @@ const App: React.FC = () => {
 
   // Filter jobs based on architect-tier legitimacy (>= 0.7)
   const filteredJobs = useMemo(
-    () => jobs.filter(j => j.legitimacy >= 0.7),
+    () => jobs.filter((j) => (j.legitimacy ?? 0) >= 0.7),
     [jobs]
   );
 
   // Ensure selection always points to a valid filtered job
   useEffect(() => {
+    // If no jobs are available, clear selection
     if (filteredJobs.length === 0) {
-      // No valid jobs; clear selection
       if (selectedJobId !== '') {
         setSelectedJobId('');
       }
       return;
     }
 
-    const exists = filteredJobs.some(j => j.id === selectedJobId);
+    // If nothing selected yet, pick the top job
+    if (!selectedJobId) {
+      setSelectedJobId(filteredJobs[0].id);
+      return;
+    }
+
+    // If current selection is no longer valid (e.g., legitimacy changed), reset to first
+    const exists = filteredJobs.some((j) => j.id === selectedJobId);
     if (!exists) {
       setSelectedJobId(filteredJobs[0].id);
     }
@@ -63,7 +69,7 @@ const App: React.FC = () => {
 
   const selectedJob: JobMatch | null = useMemo(() => {
     if (filteredJobs.length === 0) return null;
-    const found = filteredJobs.find(j => j.id === selectedJobId);
+    const found = filteredJobs.find((j) => j.id === selectedJobId);
     return found ?? filteredJobs[0];
   }, [filteredJobs, selectedJobId]);
 
@@ -85,7 +91,9 @@ const App: React.FC = () => {
           activeScenario: {
             id: 'opt-v2',
             title: selectedJob.title,
-            jd: `Requires: ${selectedJob.highlights.join(', ')}. ${selectedJob.company} infrastructure.`,
+            jd: `Requires: ${(selectedJob.highlights ?? []).join(', ')}. ${
+              selectedJob.company
+            } infrastructure.`,
             resumeSummary: masterResume.summary,
             masterResume,
             expectedGaps: [],
@@ -94,21 +102,17 @@ const App: React.FC = () => {
       );
 
       logger.info(
-        { generatedCodeLength: result.code.length },
+        { generatedCodeLength: result.code?.length ?? 0 },
         'Optimization successful'
       );
-      setGeneratedCode(result.code);
-      setExplanation(result.explanation);
+      setGeneratedCode(result.code ?? '');
+      setExplanation(result.explanation ?? '');
     } catch (error: unknown) {
       logger.error({ error }, 'Optimization failed');
       if (error instanceof Error && error.message) {
-        setExplanation(
-          `Architect System Failure: ${error.message}`
-        );
+        setExplanation(`Architect System Failure: ${error.message}`);
       } else {
-        setExplanation(
-          'Architect System Failure: High-integrity model sync failed.'
-        );
+        setExplanation('Architect System Failure: High-integrity model sync failed.');
       }
     } finally {
       setIsLoading(false);
@@ -119,17 +123,13 @@ const App: React.FC = () => {
     (jobData: JobMatch) => {
       if (editingJob?.id) {
         // Update existing
-        setJobs(prev =>
-          prev.map(j => (j.id === editingJob.id ? jobData : j))
-        );
-        // If the job was filtered out due to legitimacy changes, selection may be invalid;
-        // selection is auto-corrected by the effect watching filteredJobs.
+        setJobs((prev) => prev.map((j) => (j.id === editingJob.id ? jobData : j)));
       } else {
         // Add new
-        setJobs(prev => [jobData, ...prev]);
-        setSelectedJobId(jobData.id);
+        setJobs((prev) => [jobData, ...prev]);
       }
 
+      setSelectedJobId(jobData.id);
       setIsModalOpen(false);
       setEditingJob(null);
       setNotification('Signal injected successfully.');
@@ -161,7 +161,7 @@ const App: React.FC = () => {
     []
   );
 
-  const hasDashboardJobs = activeTab === 'dashboard' && filteredJobs.length > 0;
+  const hasDashboardJobs = activeTab === 'dashboard' && filteredJobs.length > 0 && !!selectedJob;
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
@@ -175,9 +175,9 @@ const App: React.FC = () => {
               Architect Command Center
             </h1>
           </div>
-          <div className="h-4 w-px bg-slate-800"></div>
+          <div className="h-4 w-px bg-slate-800" />
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest italic flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Inventory: {masterResume.coreCompetencies.length} Valid Tokens
           </p>
         </div>
@@ -192,8 +192,8 @@ const App: React.FC = () => {
           >
             Inject Signal
           </button>
-          <div className="h-8 w-px bg-slate-800"></div>
-          {TABS.map(tab => (
+          <div className="h-8 w-px bg-slate-800" />
+          {TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -224,8 +224,8 @@ const App: React.FC = () => {
               </div>
               <div className="flex-grow overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-8">
                 {[...filteredJobs]
-                  .sort((a, b) => b.score - a.score)
-                  .map(job => (
+                  .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+                  .map((job) => (
                     <div
                       key={job.id}
                       onClick={() => setSelectedJobId(job.id)}
@@ -256,9 +256,7 @@ const App: React.FC = () => {
                   className="bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                   aria-label="Generate optimized resume artifact"
                 >
-                  {isLoading
-                    ? 'Running Compliance Audit...'
-                    : 'Sync Optimized Artifact'}
+                  {isLoading ? 'Running Compliance Audit...' : 'Sync Optimized Artifact'}
                 </button>
               </div>
               <div className="flex-grow overflow-hidden">
@@ -282,7 +280,7 @@ const App: React.FC = () => {
                     Signal Intelligence
                   </h3>
                   <button
-                    onClick={() => selectedJob && handleEditJob(selectedJob)}
+                    onClick={() => handleEditJob(selectedJob)}
                     disabled={!selectedJob}
                     className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition-all disabled:opacity-50"
                   >
@@ -295,7 +293,7 @@ const App: React.FC = () => {
                       Requirements Inventory
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {(selectedJob.highlights ?? []).map(h => (
+                      {(selectedJob.highlights ?? []).map((h) => (
                         <span
                           key={h}
                           className="text-[9px] font-bold text-slate-300 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700/50"
@@ -327,7 +325,7 @@ const App: React.FC = () => {
 
         {activeTab === 'kanban' && (
           <div className="flex-grow flex gap-4 overflow-x-auto custom-scrollbar pb-10">
-            {STATUSES.map(status => (
+            {STATUSES.map((status) => (
               <div
                 key={status}
                 className="min-w-[340px] bg-slate-900/40 border border-slate-800/60 rounded-[32px] p-6 flex flex-col gap-6 flex-shrink-0"
@@ -337,13 +335,13 @@ const App: React.FC = () => {
                     {status}
                   </h3>
                   <span className="text-[9px] font-black text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full">
-                    {filteredJobs.filter(j => j.status === status).length}
+                    {filteredJobs.filter((j) => j.status === status).length}
                   </span>
                 </div>
                 <div className="flex-grow space-y-4 overflow-y-auto custom-scrollbar pr-1 max-h-[calc(100vh-300px)]">
                   {filteredJobs
-                    .filter(j => j.status === status)
-                    .map(job => (
+                    .filter((j) => j.status === status)
+                    .map((job) => (
                       <div
                         key={job.id}
                         onClick={() => setSelectedJobId(job.id)}
@@ -368,7 +366,7 @@ const App: React.FC = () => {
             <Editor
               label="Master Source (JSON)"
               value={JSON.stringify(masterResume, null, 2)}
-              onChange={v => {
+              onChange={(v) => {
                 try {
                   const newResume = JSON.parse(v) as MasterResume;
                   if (!Array.isArray(newResume.coreCompetencies)) {
@@ -397,15 +395,15 @@ const App: React.FC = () => {
                 </h4>
                 <div className="space-y-2 font-mono text-[11px]">
                   <p className="text-emerald-400 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     [SYSTEM] Hallucination Lock: ACTIVE
                   </p>
                   <p className="text-emerald-400 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     [SYSTEM] Token Intersection: ENFORCED
                   </p>
                   <p className="text-slate-500 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
                     [LOG] Artifact Mapping... 100% Valid
                   </p>
                 </div>
@@ -423,16 +421,11 @@ const App: React.FC = () => {
       />
 
       {notification && (
-        <Notification
-          message={notification}
-          onClose={() => setNotification(null)}
-        />
+        <Notification message={notification} onClose={() => setNotification(null)} />
       )}
 
       <ComplianceFooter
-        onApprove={() =>
-          setNotification('Tailored artifact released for submission.')
-        }
+        onApprove={() => setNotification('Tailored artifact released for submission.')}
         isReady={!!generatedCode && isComplianceApproved}
         onComplianceChange={handleComplianceChange}
       />

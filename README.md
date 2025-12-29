@@ -4,8 +4,8 @@
 
 ### 🎯 **New Features & Enhancements**
 
-- **Constants Module (`constants.ts`)**: Fixed all escaping issues, added missing `baseSalary` fields, expanded `INTERVIEW_BRIEFS` with OpenAI coverage, and productionized FastAPI endpoint template with proper regex patterns.[1]
-- **ESLint Flat Config (`eslint.config.js`)**: Modern v9+ flat config with React 19, TypeScript, Vite optimizations. Added Node globals, security rules, and JSX handling.[2]
+- **Constants Module (`constants.ts`)**: Fixed all escaping issues, added missing `baseSalary` fields, expanded `INTERVIEW_BRIEFS` with OpenAI coverage, and productionized FastAPI endpoint template with proper regex patterns.
+- **ESLint Flat Config (`eslint.config.js`)**: Modern v9+ flat config with React 19, TypeScript, Vite optimizations. Added Node globals, security rules, and JSX handling.
 - **Generic Form Hook (`useForm.ts`)**: Production-ready generic with checkbox/select support, `useCallback` optimization, and programmatic `setFieldValue`. Zero type errors.
 - **App Component (`App.tsx`)**: Full TypeScript refactor with `JobStatus` type, null-safety, accessibility (`aria-label`, `role=button`), `useCallback` performance, and conditional rendering.
 

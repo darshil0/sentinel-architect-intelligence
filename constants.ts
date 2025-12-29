@@ -1,4 +1,4 @@
-import { Scenario, JobMatch, OutreachTemplate, MasterResume } from "./types";
+import { JobMatch, OutreachTemplate, MasterResume } from "./types";
 
 export const MASTER_RESUME_JSON: MasterResume = {
   personalInfo: {
@@ -68,6 +68,7 @@ export const MOCK_JOBS: JobMatch[] = [
     status: "offer",
     personaHint: "infrastructure",
     proof: "Verified via Lever API sync.",
+    baseSalary: 220000,
   },
   {
     id: "v10-003",
@@ -81,16 +82,17 @@ export const MOCK_JOBS: JobMatch[] = [
     postedDate: "3d ago",
     isVerified: true,
     sourceTier: "Tier 1 - Direct",
-    status: "submitted",
-    submissionDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+    status: "tailoring",
     personaHint: "frontier",
     proof: "Verified via OpenAI Greenhouse instance.",
+    baseSalary: 195000,
   }
 ];
 
 export const INTERVIEW_BRIEFS: Record<string, string[]> = {
   Anthropic: ["Bias Detection Evals", "Non-deterministic Testing", "Safety-First CI/CD"],
   Stripe: ["Idempotency Testing", "Financial Schema Evolution", "Scale & Latency Metrics"],
+  OpenAI: ["LLM Guardrails", "Evaluation Frameworks", "RAG Validation"],
   Default: ["Testing Framework Architecture", "Quality Guardrails", "Automation ROI"],
 };
 
@@ -102,6 +104,13 @@ export const OUTREACH_TEMPLATES: OutreachTemplate[] = [
     persona: "standard",
     content: "Hi [Name], Following up on my [Job Title] application. I am still highly interested in [Company]'s mission...",
   },
+  {
+    id: "intro-new",
+    title: "Targeted Introduction", 
+    target: "Recruiter",
+    persona: "frontier",
+    content: "Hi [Name], Your [Job Title] role at [Company] caught my attention. I've architected LLM evaluation pipelines at Frontier AI...",
+  }
 ];
 
 export const DEFAULT_SYSTEM_CONTEXT = {
@@ -112,14 +121,13 @@ export const DEFAULT_SYSTEM_CONTEXT = {
   validationLogic: "Zero-Hallucination Lock (Subset check).",
   fullDocumentation: "Lead Architect System Specs 2025.",
   coreDataModels: "Pydantic based validation.",
-};
+} as const;
 
 export const SYSTEM_PROMPT_TEMPLATE = `
 Act as the Lead Architect. Generate the production-ready FastAPI logic for the optimization endpoint.
 CONSTRAINTS: 
 - Use Temperature 0.2.
-- Enforce the Zero-Hallucination Lock: The tailored artifact MUST be a strict semantic subset of the Master Resume inventory.
-- Reference the DiscoveryOrchestrator for signal validation and the ResumeOptimizer for tailoring.
+- Enforce validate_no_hallucinations (Tailored content MUST be a subset of the Master Resume inventory).
 
 JD: {{SCENARIO}}
 MASTER_RESUME: {{CONTEXT}}
@@ -129,12 +137,13 @@ export const ARCHITECT_MASTER_BLUEPRINT = `
 # LEAD ARCHITECT - SYSTEM MASTER BLUEPRINT 2025
 # CORE: Zero-Hallucination SDET Recruitment Optimization
 # AUTH: AI-VERIFIED TIER 1
-`;
+` as const;
 
 export const GHOST_JOB_DETECTOR_SOURCE = `
 import requests
 import re
 from datetime import datetime, timedelta
+from typing import Dict, Any
 
 def audit_signal_integrity(description: str, posted_date: str) -> float:
     """
@@ -159,26 +168,19 @@ def audit_signal_integrity(description: str, posted_date: str) -> float:
         score -= 0.5
         
     return max(0.0, score)
-`;
+` as const;
 
 export const ARCHITECT_OPTIMIZER_ENDPOINT = `
 import re
 import logging
-from typing import List, Dict, Set, Optional, Any
-from fastapi import FastAPI, HTTPException, Body, status
+from typing import List, Dict, Any, Set
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel, Field
 
-# --- LEAD ARCHITECT ARCHITECTURE ---
-# Documentation Reference: Sentinel-QA-Architect-v1
-# Logic: Zero-Hallucination Resume Optimization (Subset Enforcement)
-
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("LeadArchitect.Optimizer")
+logger = logging.getLogger("LeadArchitect")
 
-app = FastAPI(
-    title="QA Career Intelligence: Optimization Node",
-    description="Principal endpoint for high-integrity SDET resume tailoring."
-)
+app = FastAPI(title="QA Career Intelligence Optimizer", version="1.0.0")
 
 class ExperienceEntry(BaseModel):
     company: str
@@ -206,95 +208,39 @@ class DiffView(BaseModel):
     rationale: str
     gaps_detected: List[str]
     integrity_verified: bool = True
-    hallucination_audit_passed: bool = True
-
-class DiscoveryOrchestrator:
-    """
-    Handles signal ingestion and validates recruitment intent.
-    """
-    @staticmethod
-    def audit_signal(jd: JobDescription) -> float:
-        """Assigns a legitimacy score based on technical depth and source."""
-        if len(jd.requirements) < 3:
-            return 0.4
-        return 0.95
 
 class ResumeOptimizer:
-    """
-    Principal Architect implementation for zero-hallucination tailoring.
-    """
     def __init__(self, master: MasterResume):
         self.master = master
-        self.inventory = self._build_semantic_inventory()
+        self.inventory = self._build_inventory()
 
-    def _build_semantic_inventory(self) -> Set[str]:
-        """Flatten master resume into a searchable token set for integrity audit."""
-        source_data = [
+    def _build_inventory(self) -> Set[str]:
+        components = [
             self.master.summary,
             " ".join(self.master.coreCompetencies),
             " ".join([exp.role for exp in self.master.experience]),
             " ".join([" ".join(exp.achievements) for exp in self.master.experience])
         ]
-        # Precise extraction of technical tokens including C++, .NET, FastAPI, etc.
-        text_stream = " ".join(source_data).lower()
-        return set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{2,}\\b', text_stream))
+        full_text = " ".join(components).lower()
+        return set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{3,}\\b', full_text))
 
     def validate_no_hallucinations(self, tailored_text: str) -> List[str]:
-        """
-        STRICT COMPLIANCE CHECK:
-        Returns all tokens in tailored_text that do NOT exist in the master inventory.
-        """
-        tailored_tokens = set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{2,}\\b', tailored_text.lower()))
-        violations = [t for t in tailored_tokens if t not in self.inventory]
-        return violations
+        tailored_tokens = set(re.findall(r'\\b[\\w\\d\\.\\-\\+#]{3,}\\b', tailored_text.lower()))
+        return [t for t in tailored_tokens if t not in self.inventory]
 
-@app.post("/optimize", response_model=DiffView, status_code=status.HTTP_200_OK)
-async def optimize_endpoint(
-    master: MasterResume = Body(..., description="The verified Master Source of Truth."),
-    jd: JobDescription = Body(..., description="High-legitimacy job signal.")
-):
-    """
-    Lead Architect Implementation: Generates a tailored artifact with subset enforcement.
-    """
-    logger.info(f"Initiating Architect Sync for {jd.company} | Signal: {jd.id}")
-    
-    # 1. Orchestration Phase: Signal Legitimacy Audit
-    if DiscoveryOrchestrator.audit_signal(jd) < 0.7:
-        raise HTTPException(status_code=400, detail="Low-integrity signal. Tailoring aborted.")
-
+@app.post("/optimize", response_model=DiffView)
+async def optimize_resume(master: MasterResume = Body(..., embed=True), jd: JobDescription = Body(..., embed=True)):
     optimizer = ResumeOptimizer(master)
-    
-    # 2. Optimization Phase: Token Intersection Analysis
-    # Identify which JD requirements are verified in our Master Inventory
-    intersection = [req for req in jd.requirements if req.lower() in optimizer.inventory]
-    gaps = [req for req in jd.requirements if req.lower() not in optimizer.inventory]
-    
-    # 3. Tailoring Phase: Constructing the Subset Artifact
-    # (In a real system, this logic is augmented by Gemini 3 Pro @ Temp 0.2)
-    tailored_summary = (
-        f"Senior SDET with verified mastery in {', '.join(intersection[:5])}. "
-        f"Built high-scale automation at {master.experience[0].company} using a toolset derived "
-        f"from your core requirements."
-    )
-    
-    # 4. Mandatory Integrity Audit: Hallucination Lock
-    violations = optimizer.validate_no_hallucinations(tailored_summary)
-    if violations:
-        logger.error(f"INTEGRITY BREACH: Model attempted fabrication. Violations: {violations}")
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "error": "Semantic Integrity Breach",
-                "violating_tokens": violations,
-                "resolution": "Artifact regeneration required with stricter subset constraints."
-            }
-        )
-
+    matches = [req for req in jd.requirements if any(term in req.lower() for term in optimizer.inventory)]
+    tailored = f"Architect with expertise in {', '.join(matches[:4])}. " + master.summary
+    hallucinations = optimizer.validate_no_hallucinations(tailored)
+    if hallucinations:
+        raise HTTPException(status_code=422, detail={"error": "Hallucination Detected", "tokens": hallucinations})
     return DiffView(
         original_summary=master.summary,
-        tailored_summary=tailored_summary,
-        rationale=f"Successfully mapped {len(intersection)} competencies from Master Source.",
-        gaps_detected=gaps,
-        hallucination_audit_passed=True
+        tailored_summary=tailed,
+        rationale=f"Matched {len(matches)} competencies.",
+        gaps_detected=[r for r in jd.requirements if not any(term in r.lower() for term in optimizer.inventory)],
+        integrity_verified=len(hallucinations) == 0
     )
-`;
+` as const;

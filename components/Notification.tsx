@@ -1,8 +1,7 @@
-
 import React, { useEffect } from 'react';
 
 interface NotificationProps {
-  message: string;
+  message: string | null;
   type?: 'success' | 'error' | 'info';
   onClose: () => void;
   duration?: number;
@@ -15,9 +14,12 @@ const Notification: React.FC<NotificationProps> = ({
   duration = 4000,
 }) => {
   useEffect(() => {
+    if (!message) return;
     const timer = setTimeout(onClose, duration);
     return () => clearTimeout(timer);
-  }, [onClose, duration]);
+  }, [message, onClose, duration]);
+
+  if (!message) return null;
 
   const styles = {
     success: 'border-emerald-500/50 bg-slate-900/90 text-emerald-400',

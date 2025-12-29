@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { GenerationRequest, SystemContext } from "../types";
 import { SYSTEM_PROMPT_TEMPLATE } from "../constants";
+import logger from "./logger";
 
 export class GeminiService {
   /**
@@ -31,6 +32,7 @@ Core Data Models: ${context.coreDataModels}
       .replace("{{SCENARIO}}", scenarioString);
 
     try {
+      logger.info({ request }, "Generating content with Gemini API");
       // Use 'gemini-3-pro-preview' for complex structural and architectural tasks.
       const response = await ai.models.generateContent({
         model: 'gemini-3-pro-preview',
@@ -49,12 +51,14 @@ Core Data Models: ${context.coreDataModels}
       const codeMatch = text.match(codeRegex);
       const code = codeMatch ? codeMatch[1].trim() : text.trim();
       
-      return { 
+      const result = {
         code, 
         explanation: "Lead Architect Audit: Implementation verified. Logic strictly follows the ResumeOptimizer subset constraint and DiscoveryOrchestrator signal verification pattern." 
       };
+      logger.info({ result }, "Successfully generated content");
+      return result;
     } catch (error) {
-      console.error("Architectural Node Sync Error:", error);
+      logger.error({ error }, "Architectural Node Sync Error");
       throw new Error("System Alert: High-integrity model sync failed. Verify API status.");
     }
   }

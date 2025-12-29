@@ -6,26 +6,37 @@ import {
   MASTER_RESUME_JSON,
   ARCHITECT_OPTIMIZER_ENDPOINT
 } from './constants';
-import { JobMatch, MasterResume, SourceTier } from './types';
+import { JobMatch, MasterResume } from './types';
 import JobCard from './components/JobCard';
 import DiffViewer from './components/DiffViewer';
 import ScoreBreakdown from './components/ScoreBreakdown';
 import ComplianceFooter from './components/ComplianceFooter';
 import Editor from './components/Editor';
 import ScraperEngine from './components/ScraperEngine';
+import InjectSignalModal from './components/InjectSignalModal';
+import Notification from './components/Notification';
+import logger from './services/logger';
+
+type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'kanban' | 'scrapers' | 'blueprints'>('dashboard');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [jobs, setJobs] = useState<JobMatch[]>(MOCK_JOBS);
   const [selectedJobId, setSelectedJobId] = useState<string>(MOCK_JOBS[0].id);
   const [masterResume, setMasterResume] = useState<MasterResume>(MASTER_RESUME_JSON);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
   const [explanation, setExplanation] = useState("");
-  const [isComplianceApproved, setIsComplianceApproved] = useState(false);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
+
+  const [notification, setNotification] = useState<string | null>(null);
+  const [isComplianceApproved, setIsComplianceApproved] = useState(false);
+
+  const handleComplianceChange = (approved: boolean) => {
+    setIsComplianceApproved(approved);
+  };
 
   // Filter jobs based on architect-tier legitimacy (>= 0.7)
   const filteredJobs = useMemo(() => 
@@ -45,6 +56,7 @@ const App: React.FC = () => {
 
   const handleOptimize = async () => {
     if (!selectedJob) return;
+    logger.info({ selectedJob }, 'Optimizing job');
     setIsLoading(true);
     setGeneratedCode("");
     try {
@@ -61,36 +73,18 @@ const App: React.FC = () => {
           expectedGaps: []
         }
       });
+      logger.info({ generatedCode: result.code, explanation: result.explanation }, 'Optimization successful');
       setGeneratedCode(result.code);
       setExplanation(result.explanation);
-    } catch (err) {
+    } catch (error) {
+      logger.error({ error }, 'Optimization failed');
       setExplanation("Architect System Failure: High-integrity model sync failed.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveJob = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const highlights = (formData.get('highlights') as string).split(',').map(s => s.trim()).filter(Boolean);
-
-    const jobData: JobMatch = {
-      id: editingJob?.id || `job-${Date.now()}`,
-      title: formData.get('title') as string,
-      company: formData.get('company') as string,
-      location: formData.get('location') as string,
-      score: parseFloat(formData.get('score') as string) || 8.0,
-      legitimacy: parseFloat(formData.get('legitimacy') as string) || 1.0,
-      highlights: highlights,
-      isRemote: formData.get('location')?.toString().toLowerCase().includes('remote') || false,
-      postedDate: editingJob?.postedDate || 'Just now',
-      isVerified: parseFloat(formData.get('legitimacy') as string) >= 0.9,
-      sourceTier: (formData.get('sourceTier') as SourceTier) || 'Tier 1 - Direct',
-      status: editingJob?.status || 'discovery',
-      proof: formData.get('proof') as string || "Manual entry",
-    };
-
+  const handleSaveJob = (jobData: JobMatch) => {
     if (editingJob) {
       setJobs(prev => prev.map(j => j.id === editingJob.id ? jobData : j));
     } else {
@@ -99,7 +93,10 @@ const App: React.FC = () => {
     }
     setIsModalOpen(false);
     setEditingJob(null);
+    setNotification('Signal injected successfully.');
   };
+
+  const TABS: Tab[] = ['dashboard', 'kanban', 'scrapers', 'blueprints'];
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
@@ -120,8 +117,8 @@ const App: React.FC = () => {
             Inject Signal
           </button>
           <div className="h-8 w-px bg-slate-800"></div>
-          {['dashboard', 'kanban', 'scrapers', 'blueprints'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
+          {TABS.map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
               {tab}
             </button>
           ))}
@@ -218,7 +215,15 @@ const App: React.FC = () => {
         {activeTab === 'scrapers' && <ScraperEngine />}
         {activeTab === 'blueprints' && (
           <div className="flex-grow grid grid-cols-2 gap-6 overflow-hidden">
-            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch(e) {} }} />
+            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => {
+              try {
+                const newResume = JSON.parse(v);
+                setMasterResume(newResume);
+                logger.info({ masterResume: newResume }, 'Master resume updated');
+              } catch (e) {
+                logger.warn({ error: e, value: v }, 'Failed to parse master resume');
+              }
+            }} />
             <div className="flex flex-col gap-6 overflow-hidden">
                <Editor label="FastAPI Principal Blueprint" value={ARCHITECT_OPTIMIZER_ENDPOINT} readOnly />
                <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-4">
@@ -234,31 +239,22 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0f172a]/95 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-          <div className="bg-[#1e293b] border border-slate-700/80 w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden p-10">
-            <h2 className="text-2xl font-black uppercase text-white mb-2">{editingJob ? 'Update Signal' : 'Inject Signal'}</h2>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-8">Architect Review Mandatory Following Injection</p>
-            <form onSubmit={handleSaveJob} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <input name="company" placeholder="Company Name" defaultValue={editingJob?.company} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-                <input name="title" placeholder="Position Title" defaultValue={editingJob?.title} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-              </div>
-              <input name="location" placeholder="Location (e.g., SF / Remote)" defaultValue={editingJob?.location} required className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600" />
-              <textarea name="highlights" placeholder="Semantic Requirements (Comma Separated Tokens)" defaultValue={editingJob?.highlights?.join(', ')} className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 transition-all placeholder:text-slate-600 h-32 resize-none" />
-              <div className="flex gap-4 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-slate-800 text-slate-400 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-700 transition-all">Abort</button>
-                <button type="submit" className="flex-1 py-4 bg-emerald-500 text-slate-950 rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10">Commit Signal</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <InjectSignalModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        editingJob={editingJob}
+        onSave={handleSaveJob}
+      />
+
+      <Notification
+        message={notification}
+        onClose={() => setNotification(null)}
+      />
 
       <ComplianceFooter 
-        onApprove={() => alert("Tailored artifact released for submission.")} 
+        onApprove={() => setNotification("Tailored artifact released for submission.")}
         isReady={!!generatedCode} 
-        onComplianceChange={setIsComplianceApproved} 
+        onComplianceChange={handleComplianceChange}
       />
     </div>
   );

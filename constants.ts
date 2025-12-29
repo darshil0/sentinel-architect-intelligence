@@ -1,4 +1,4 @@
-import { Scenario, JobMatch, OutreachTemplate, MasterResume } from "./types";
+import { JobMatch, OutreachTemplate, MasterResume } from "./types";
 
 export const MASTER_RESUME_JSON: MasterResume = {
   personalInfo: {

@@ -15,14 +15,9 @@ import Editor from './components/Editor';
 import ScraperEngine from './components/ScraperEngine';
 import InjectSignalModal from './components/InjectSignalModal';
 import Notification from './components/Notification';
-import ResumeParser from './components/ResumeParser';
+import logger from './services/logger';
 
 type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
-
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error' | 'info';
-}
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -36,16 +31,19 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
 
-  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+  const [isComplianceApproved, setIsComplianceApproved] = useState(false);
 
-  const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    setNotification({ message, type });
+  const handleComplianceChange = (approved: boolean) => {
+    setIsComplianceApproved(approved);
   };
 
+  // Filter jobs based on architect-tier legitimacy (>= 0.7)
   const filteredJobs = useMemo(() => 
     jobs.filter(j => j.legitimacy >= 0.7), 
   [jobs]);
 
+  // Ensure selection always points to a valid filtered job
   useEffect(() => {
     if (!filteredJobs.find(j => j.id === selectedJobId) && filteredJobs.length > 0) {
       setSelectedJobId(filteredJobs[0].id);
@@ -58,6 +56,7 @@ const App: React.FC = () => {
 
   const handleOptimize = async () => {
     if (!selectedJob) return;
+    logger.info({ selectedJob }, 'Optimizing job');
     setIsLoading(true);
     setGeneratedCode("");
     try {
@@ -74,29 +73,12 @@ const App: React.FC = () => {
           expectedGaps: []
         }
       });
+      logger.info({ generatedCode: result.code, explanation: result.explanation }, 'Optimization successful');
       setGeneratedCode(result.code);
       setExplanation(result.explanation);
-      notify("Architectural Sync Complete", "success");
-    } catch (err) {
+    } catch (error) {
+      logger.error({ error }, 'Optimization failed');
       setExplanation("Architect System Failure: High-integrity model sync failed.");
-      notify("Sync Failed: Architectural Breach", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFollowUpRequest = async (job: JobMatch) => {
-    setIsLoading(true);
-    notify("Drafting Follow-up Artifact...", "info");
-    try {
-      const draft = await geminiService.generateFollowUpEmail(masterResume, job);
-      setGeneratedCode(draft);
-      setExplanation(`System Audit: Professional follow-up draft generated for stale signal at ${job.company}. Direct requirement mapping enforced.`);
-      setSelectedJobId(job.id);
-      setActiveTab('dashboard');
-      notify("Follow-up Draft Sync Complete", "success");
-    } catch (err) {
-      notify("Follow-up Sync Failed", "error");
     } finally {
       setIsLoading(false);
     }
@@ -105,35 +87,19 @@ const App: React.FC = () => {
   const handleSaveJob = (jobData: JobMatch) => {
     if (editingJob) {
       setJobs(prev => prev.map(j => j.id === editingJob.id ? jobData : j));
-      notify('Signal vector updated successfully.', 'info');
     } else {
       setJobs(prev => [jobData, ...prev]);
       setSelectedJobId(jobData.id);
-      notify('New signal injected into stream.', 'success');
     }
     setIsModalOpen(false);
     setEditingJob(null);
-  };
-
-  const handleApproveArtifact = () => {
-    notify("Tailored artifact released for submission.", "success");
-  };
-
-  const handleResumeParsed = (parsedResume: MasterResume) => {
-    setMasterResume(parsedResume);
-    notify("Master Source updated via semantic ingestion.", "success");
+    setNotification('Signal injected successfully.');
   };
 
   const TABS: Tab[] = ['dashboard', 'kanban', 'scrapers', 'blueprints'];
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
-      <Notification 
-        message={notification?.message || null}
-        type={notification?.type}
-        onClose={() => setNotification(null)}
-      />
-
       <header className="h-16 border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 bg-[#0f172a]/95 backdrop-blur-md z-[100]">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -170,7 +136,7 @@ const App: React.FC = () => {
               <div className="flex-grow overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-8">
                 {[...filteredJobs].sort((a,b) => b.score - a.score).map(job => (
                   <div key={job.id} onClick={() => setSelectedJobId(job.id)}>
-                    <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUpRequest} />
+                    <JobCard job={job} isActive={selectedJobId === job.id} />
                   </div>
                 ))}
               </div>
@@ -237,7 +203,7 @@ const App: React.FC = () => {
                 <div className="flex-grow space-y-4 overflow-y-auto custom-scrollbar pr-1">
                   {filteredJobs.filter(j => j.status === status).map(job => (
                     <div key={job.id} onClick={() => setSelectedJobId(job.id)}>
-                      <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUpRequest} />
+                      <JobCard job={job} isActive={selectedJobId === job.id} />
                     </div>
                   ))}
                 </div>
@@ -249,12 +215,15 @@ const App: React.FC = () => {
         {activeTab === 'scrapers' && <ScraperEngine />}
         {activeTab === 'blueprints' && (
           <div className="flex-grow grid grid-cols-2 gap-6 overflow-hidden">
-            <div className="flex flex-col gap-6 overflow-hidden">
-              <ResumeParser onParsed={handleResumeParsed} />
-              <div className="flex-grow overflow-hidden">
-                <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch {} }} />
-              </div>
-            </div>
+            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { 
+              try { 
+                const newResume = JSON.parse(v);
+                setMasterResume(newResume);
+                logger.info({ masterResume: newResume }, 'Master resume updated');
+              } catch (e) { 
+                logger.warn({ error: e, value: v }, 'Failed to parse master resume');
+              } 
+            }} />
             <div className="flex flex-col gap-6 overflow-hidden">
                <Editor label="FastAPI Principal Blueprint" value={ARCHITECT_OPTIMIZER_ENDPOINT} readOnly />
                <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-4">
@@ -277,10 +246,15 @@ const App: React.FC = () => {
         onSave={handleSaveJob}
       />
 
+      <Notification 
+        message={notification}
+        onClose={() => setNotification(null)}
+      />
+
       <ComplianceFooter 
-        onApprove={handleApproveArtifact} 
+        onApprove={() => setNotification("Tailored artifact released for submission.")} 
         isReady={!!generatedCode} 
-        onComplianceChange={() => {}} 
+        onComplianceChange={handleComplianceChange} 
       />
     </div>
   );

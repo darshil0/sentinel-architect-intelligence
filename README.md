@@ -37,4 +37,24 @@ A high-integrity, automated system designed for **Senior SDETs** and **Test Arch
 - **Optimization**: Cleaned up `App.tsx` state management logic.
 
 ---
+
+## 📝 Versioning and Changelog
+
+### Version 1.1.0 (Latest)
+
+- **Dependencies & Tooling:**
+  - Updated all outdated dependencies to their latest stable versions.
+  - Added `lint` and `test` scripts to `package.json` to enforce code quality and enable testing.
+  - Configured ESLint with a new `eslint.config.js` file and added recommended rule sets.
+
+- **Bug Fixes & Performance:**
+  - Fixed React `key` prop warnings by adding unique and stable keys to all lists of elements.
+  - Resolved various linter-flagged issues, including unused variables and `any` type casting.
+
+- **Refactoring & Maintainability:**
+  - Extracted the "Inject Signal" modal into its own reusable component (`InjectSignalModal.tsx`).
+  - Replaced the `alert()` call in the `ComplianceFooter` component with a more user-friendly notification system.
+  - Enhanced form handling in the "Inject Signal" modal by creating a reusable `useForm` hook.
+
+---
 *Authorized for Lead Architect use only. All artifacts are compliance-locked and AI-verified.*

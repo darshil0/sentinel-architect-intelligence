@@ -7,7 +7,7 @@ import {
   MASTER_RESUME_JSON,
   ARCHITECT_OPTIMIZER_ENDPOINT
 } from './constants';
-import { JobMatch, MasterResume, SourceTier } from './types';
+import { JobMatch, MasterResume } from './types';
 import JobCard from './components/JobCard';
 import DiffViewer from './components/DiffViewer';
 import ScoreBreakdown from './components/ScoreBreakdown';
@@ -17,20 +17,16 @@ import ScraperEngine from './components/ScraperEngine';
 import InjectSignalModal from './components/InjectSignalModal';
 import Notification from './components/Notification';
 
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error' | 'info';
-}
+type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'kanban' | 'scrapers' | 'blueprints'>('dashboard');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [jobs, setJobs] = useState<JobMatch[]>(MOCK_JOBS);
   const [selectedJobId, setSelectedJobId] = useState<string>(MOCK_JOBS[0].id);
   const [masterResume, setMasterResume] = useState<MasterResume>(MASTER_RESUME_JSON);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
   const [explanation, setExplanation] = useState("");
-  const [isComplianceApproved, setIsComplianceApproved] = useState(false);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
@@ -38,6 +34,13 @@ const App: React.FC = () => {
 
   const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
+  };
+
+  const [notification, setNotification] = useState<string | null>(null);
+  const [isComplianceApproved, setIsComplianceApproved] = useState(false);
+
+  const handleComplianceChange = (approved: boolean) => {
+    setIsComplianceApproved(approved);
   };
 
   // Filter jobs based on architect-tier legitimacy (>= 0.7)
@@ -76,8 +79,7 @@ const App: React.FC = () => {
       });
       setGeneratedCode(result.code);
       setExplanation(result.explanation);
-      notify("Architectural Sync Complete", "success");
-    } catch (err) {
+    } catch {
       setExplanation("Architect System Failure: High-integrity model sync failed.");
       notify("Sync Failed: Model Timeout", "error");
     } finally {
@@ -96,11 +98,10 @@ const App: React.FC = () => {
     }
     setIsModalOpen(false);
     setEditingJob(null);
+    setNotification('Signal injected successfully.');
   };
 
-  const handleApprove = () => {
-    notify("Artifact Released for Submission", "success");
-  };
+  const TABS: Tab[] = ['dashboard', 'kanban', 'scrapers', 'blueprints'];
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-inter selection:bg-emerald-500/20 overflow-hidden">
@@ -132,12 +133,8 @@ const App: React.FC = () => {
             Inject Signal
           </button>
           <div className="h-8 w-px bg-slate-800"></div>
-          {['dashboard', 'kanban', 'scrapers', 'blueprints'].map(tab => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab as any)} 
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}
-            >
+          {TABS.map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
               {tab}
             </button>
           ))}
@@ -243,7 +240,7 @@ const App: React.FC = () => {
         {activeTab === 'scrapers' && <ScraperEngine />}
         {activeTab === 'blueprints' && (
           <div className="flex-grow grid grid-cols-2 gap-6 overflow-hidden">
-            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch(e) {} }} />
+            <Editor label="Master Source (JSON)" value={JSON.stringify(masterResume, null, 2)} onChange={(v) => { try { setMasterResume(JSON.parse(v)); } catch (e) { console.error(e) } }} />
             <div className="flex flex-col gap-6 overflow-hidden">
                <Editor label="FastAPI Principal Blueprint" value={ARCHITECT_OPTIMIZER_ENDPOINT} readOnly />
                <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-4">
@@ -259,17 +256,22 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <InjectSignalModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSave={handleSaveJob} 
-        editingJob={editingJob} 
+      <InjectSignalModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        editingJob={editingJob}
+        onSave={handleSaveJob}
+      />
+
+      <Notification
+        message={notification}
+        onClose={() => setNotification(null)}
       />
 
       <ComplianceFooter 
-        onApprove={handleApprove} 
+        onApprove={() => setNotification("Tailored artifact released for submission.")}
         isReady={!!generatedCode} 
-        onComplianceChange={setIsComplianceApproved} 
+        onComplianceChange={handleComplianceChange}
       />
     </div>
   );

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GHOST_JOB_DETECTOR_SOURCE, ARCHITECT_MASTER_BLUEPRINT } from '../constants';
+import AgentScheduler from './AgentScheduler';
+import { Schedule } from '../types';
 
 type EngineId = 'linkedin' | 'dice' | 'ghost';
 
@@ -7,6 +9,73 @@ const ScraperEngine: React.FC = () => {
   const [activeEngine, setActiveEngine] = useState<EngineId>('linkedin');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simLogs, setSimLogs] = useState<string[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+
+  useEffect(() => {
+    const storedSchedules = localStorage.getItem('agentSchedules');
+    if (storedSchedules) {
+      setSchedules(JSON.parse(storedSchedules));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('agentSchedules', JSON.stringify(schedules));
+  }, [schedules]);
+
+  useEffect(() => {
+    const cronMatch = (cron: string, date: Date) => {
+      const cronParts = cron.split(' ');
+      const [minute, hour, dayOfMonth, month, dayOfWeek] = cronParts;
+
+      const match = (value: number, part: string) => {
+        if (part === '*') return true;
+        if (part.includes(',')) {
+          return part.split(',').some((p) => match(value, p));
+        }
+        if (part.includes('/')) {
+          const [base, step] = part.split('/').map(Number);
+          return value % step === (base || 0);
+        }
+        if (part.includes('-')) {
+          const [start, end] = part.split('-').map(Number);
+          return value >= start && value <= end;
+        }
+        return value === Number(part);
+      };
+
+      return (
+        match(date.getMinutes(), minute) &&
+        match(date.getHours(), hour) &&
+        match(date.getDate(), dayOfMonth) &&
+        match(date.getMonth() + 1, month) &&
+        match(date.getDay(), dayOfWeek)
+      );
+    };
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      schedules.forEach((schedule) => {
+        if (cronMatch(schedule.cron, now)) {
+          runSimulation(schedule.agentId);
+        }
+      });
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [schedules]);
+
+  const handleAddSchedule = (agentId: EngineId, cron: string) => {
+    const newSchedule: Schedule = {
+      id: crypto.randomUUID(),
+      agentId,
+      cron,
+    };
+    setSchedules((prev) => [...prev, newSchedule]);
+  };
+
+  const handleRemoveSchedule = (id: string) => {
+    setSchedules((prev) => prev.filter((s) => s.id !== id));
+  };
 
   const linkedinCode = `
 from playwright.sync_api import sync_playwright
@@ -60,14 +129,15 @@ class DiceDiscoveryAgent:
     setSimLogs([]);
   };
 
-  const runSimulation = () => {
+  const runSimulation = (agentId?: EngineId) => {
+    const engineToRun = agentId || activeEngine;
     if (isSimulating) return;
 
     setIsSimulating(true);
     setSimLogs([
-      `[SYSTEM] Initializing ${activeEngine.toUpperCase()} Agent...`,
+      `[SYSTEM] Initializing ${engineToRun.toUpperCase()} Agent...`,
       `[SYSTEM] Compliance Check: ARCHITECT_CERTIFIED`,
-      `[SYSTEM] Target Protocol: ${activeEngine === 'dice' ? 'REST_API' : 'HEADLESS_BROWSER'}`
+      `[SYSTEM] Target Protocol: ${engineToRun === 'dice' ? 'REST_API' : 'HEADLESS_BROWSER'}`
     ]);
 
     const messages: Record<EngineId, string[]> = {
@@ -95,10 +165,10 @@ class DiceDiscoveryAgent:
       ],
     };
 
-    messages[activeEngine].forEach((msg, i) => {
+    messages[engineToRun].forEach((msg, i) => {
       window.setTimeout(() => {
         setSimLogs((prev) => [...prev, msg]);
-        if (i === messages[activeEngine].length - 1) {
+        if (i === messages[engineToRun].length - 1) {
           setIsSimulating(false);
         }
       }, (i + 1) * 800);
@@ -166,7 +236,7 @@ class DiceDiscoveryAgent:
         </div>
 
         <div className="col-span-4 flex flex-col gap-6 overflow-hidden">
-          <div className="bg-[#0b1120] border border-slate-800 rounded-[32px] flex-grow flex flex-col shadow-inner overflow-hidden">
+          <div className="bg-[#0b1120] border border-slate-800 rounded-[32px] flex flex-col shadow-inner overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-800/60 bg-slate-900/40 flex justify-between items-center">
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 Agent Terminal
@@ -200,12 +270,20 @@ class DiceDiscoveryAgent:
               </button>
             </div>
           </div>
-
-          <div className="bg-slate-900/40 border border-slate-800/60 rounded-3xl p-6">
-             <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Master Audit Log</h5>
-             <div className="text-[10px] text-slate-500 font-mono leading-relaxed italic">
-               "{ARCHITECT_MASTER_BLUEPRINT.split('\n')[1].trim()}"
-             </div>
+          <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+            <AgentScheduler
+              schedules={schedules}
+              onAddSchedule={handleAddSchedule}
+              onRemoveSchedule={handleRemoveSchedule}
+            />
+            <div className="bg-slate-900/40 border border-slate-800/60 rounded-3xl p-6">
+              <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
+                Master Audit Log
+              </h5>
+              <div className="text-[10px] text-slate-500 font-mono leading-relaxed italic">
+                "{ARCHITECT_MASTER_BLUEPRINT.split('\n')[1].trim()}"
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ This project is a sophisticated tool designed to help QA professionals manage th
 - **AI-Powered Optimization**: Utilize the Gemini API to generate optimized resume artifacts tailored to specific job requirements.
 - **Job Application Tracking**: Manage your job application pipeline with a Kanban board, tracking your progress from discovery to offer.
 - **Signal Injection**: Easily add new job opportunities (signals) to your dashboard for tracking and optimization.
+- **Automated Agent Scheduling**: Schedule and automate job scraper agents to run at specific intervals, ensuring a continuous flow of new opportunities.
 
 ## Technical Stack
 
@@ -15,7 +16,7 @@ This project is a sophisticated tool designed to help QA professionals manage th
 - **Backend**: Node.js, Express
 - **AI Integration**: Google Gemini API
 - **Linting**: ESLint
-- **Testing**: Vitest (to be implemented)
+- **Testing**: Playwright
 
 ## Getting Started
 
@@ -67,7 +68,6 @@ This project is a sophisticated tool designed to help QA professionals manage th
 
 ## Known Issues
 
-- **Missing Tests**: The project currently lacks a comprehensive test suite. Adding unit, integration, and end-to-end tests is a high priority.
 - **Error Handling**: While some error handling is in place, it can be improved to provide more granular feedback to the user.
 - **Incomplete CI/CD**: The project lacks a continuous integration and deployment pipeline, which is essential for maintaining code quality and automating releases.
 - **No Versioning and Changelog**: A formal versioning system and changelog are needed to track fixes, new features, and breaking changes.

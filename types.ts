@@ -81,3 +81,11 @@ export interface OutreachTemplate {
   target: string;
   persona: OutreachPersona;
 }
+
+export type EngineId = 'linkedin' | 'dice' | 'ghost';
+
+export interface Schedule {
+  id: string;
+  agentId: EngineId;
+  cron: string;
+}

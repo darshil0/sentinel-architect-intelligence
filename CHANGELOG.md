@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-12-30
+
+### Added
+- **Persistence Layer**: Implemented `localStorage` sync in `useAppState` for jobs and master profile.
+- **Master Source Ingestion**: Integrated `ResumeParser` for PDF upload and raw text parsing via Gemini.
+- **Security & Stability**: Added `express-rate-limit` to the backend to protect API budget.
+- **Containerization**: Added `Dockerfile` and `docker-compose.yml` for simplified deployment.
+- **Fluid UI**: Integrated `framer-motion` for animated tab transitions and improved UX.
+- **Verification Suite**: Added unit tests for the architectural state machine (`useAppState`).
+
+### Changed
+- Increased server payload limits to 10MB to support high-fidelity resume parsing.
+- Refined `App.tsx` layout to accommodate the new ingestion module.
+
 ## [0.2.0] - 2025-12-30
 
 ### Added

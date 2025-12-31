@@ -10,8 +10,10 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 
 - **💎 High-Integrity Diffing**: Direct comparison between your Master Profile and target Job Descriptions with real-time gap analysis.
 - **⚡ Zero-Hallucination Optimization**: Tailor your resume using the Architect-Tier optimizer that enforces a strict token-intersection guardrail.
+- **📥 Master Source Ingestion**: Integrated module to upload PDFs or paste raw resume text for automated Gemini-driven structural parsing.
 - **📊 Intelligence Kanban**: Manage your career pipeline through a specialized command board (Discovery → Offer).
 - **📡 Stale Signal Recovery**: AI-driven follow-up orchestration for applications that have exceeded the 7-day response threshold.
+- **💾 Local Persistence**: High-integrity synchronization with browser storage ensuring your signals and profile data persist across sessions.
 - **🧬 Signal Injection**: Manual entry for high-value job signals with automated legitimacy auditing.
 - **🧪 Scraper Lab**: Sandbox environment for simulating and managing job discovery agents.
 

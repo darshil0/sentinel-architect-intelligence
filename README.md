@@ -1,87 +1,78 @@
-# QA Career Intelligence: Architect Command Center
+# 🛡️ QA Career Intelligence: Architect Command Center
 
-This project is a sophisticated tool designed to help QA professionals manage their careers by optimizing resumes, tracking job applications, and leveraging AI to gain a competitive edge.
+A high-integrity Career Intelligence System designed for Senior QA professionals. Featuring a multi-tier discovery orchestrator and zero-hallucination resume optimization powered by Gemini AI.
 
-## Core Features
+![Premium Design](https://img.shields.io/badge/Design-Architect--Tier-emerald)
+![AI Model](https://img.shields.io/badge/AI-Gemini--2.0--Flash-blue)
+![Quality](https://img.shields.io/badge/Quality-Enforced-success)
 
-- **Resume-Job Description Diffing**: Visually compare your master resume against a job description to identify gaps and areas for improvement.
-- **AI-Powered Optimization**: Utilize the Gemini API to generate optimized resume artifacts tailored to specific job requirements with zero-hallucination guardrails.
-- **Job Application Tracking**: Manage your job application pipeline with a full-lifecycle Kanban board (Discovery, Tailoring, Submitted, Screening, Interview, Offer).
-- **Stale Signal Recovery**: Automatically detect stale applications (7+ days since submission) and generate high-signal AI follow-up drafts.
-- **Signal Injection**: Easily add new job opportunities (signals) to your dashboard for tracking and optimization.
-- **Scraper Lab**: A sandbox environment for simulating and managing job discovery agents (LinkedIn, Dice, Ghost Detector).
+## 🚀 Core Intelligence Modules
 
-## Technical Stack
+- **💎 High-Integrity Diffing**: Direct comparison between your Master Profile and target Job Descriptions with real-time gap analysis.
+- **⚡ Zero-Hallucination Optimization**: Tailor your resume using the Architect-Tier optimizer that enforces a strict token-intersection guardrail.
+- **📊 Intelligence Kanban**: Manage your career pipeline through a specialized command board (Discovery → Offer).
+- **📡 Stale Signal Recovery**: AI-driven follow-up orchestration for applications that have exceeded the 7-day response threshold.
+- **🧬 Signal Injection**: Manual entry for high-value job signals with automated legitimacy auditing.
+- **🧪 Scraper Lab**: Sandbox environment for simulating and managing job discovery agents.
 
-- **Frontend**: React 19, TypeScript, Tailwind CSS, Vite
-- **Backend**: Node.js, Express (ES Modules)
-- **AI Integration**: Google Gemini API (Pro and Flash models)
-- **Logging**: Custom structured Logger with level-based filtering and context support.
-- **Testing**: Vitest, React Testing Library, Playwright
-- **CI/CD**: GitHub Actions for automated build and test verification.
+## 🛠️ Technical Arsenal
 
-## Getting Started
+- **Frontend**: React 19 + TypeScript + Tailwind CSS 4.0 (Custom Glassmorphism Design System)
+- **Backend**: Node.js v20 (ES Modules) + Express 5.0
+- **Brain**: Google Gemini AI (1.5 Pro & 2.0 Flash)
+- **Monitoring**: Structured Architect-Tier Logger
+- **Quality**: Vitest (Unit) + Playwright (E2E)
+- **Pipeline**: GitHub Actions CI
+
+## 🏁 Deployment Protocol
 
 ### Prerequisites
 
-- Node.js (v20 or higher)
-- npm or yarn
-- A Google Gemini API key
+- **Node.js**: v20.x or higher
+- **API Key**: A valid Google Gemini API Key
 
 ### Installation
 
-1.  **Clone the repository:**
-
+1.  **Clone the Command Center:**
     ```bash
     git clone https://github.com/darshil0/sentinel-architect-intelligence.git
     cd sentinel-architect-intelligence
     ```
 
-2.  **Install dependencies:**
-
+2.  **Initialize Environment:**
     ```bash
     npm install
     ```
 
-3.  **Set up environment variables:**
-
-    Create a `.env` file in the root of the project and add your Gemini API key and the API URL:
-
+3.  **Configure Environment Variables:**
+    Create a `.env` file:
     ```env
-    GEMINI_API_KEY=your_gemini_api_key
+    GEMINI_API_KEY=your_key_here
     VITE_API_URL=http://localhost:3001
     ```
 
-4.  **Run the application:**
-
-    In one terminal, start the backend server:
-
+4.  **Launch Systems:**
+    Terminal 1 (Backend):
     ```bash
     node server.js
     ```
-
-    In another terminal, start the frontend development server:
-
+    Terminal 2 (Frontend):
     ```bash
     npm run dev
     ```
 
-    The application will be available at `http://localhost:3000`.
+## 🧪 Quality Audit
 
-## Testing
-
-Run the unit test suite using Vitest:
-
+Execute the full verification suite:
 ```bash
 npm test
 ```
 
-## Maintenance
+## 📜 Archives
 
-- **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for a detailed history of changes.
-- **Architecture**: Refer to [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md) for deep-dive technical specs.
+- **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the Architect’s record of updates.
+- **Components**: UI powered by custom glass panels and emerald-core gradients.
 
-## License
+## ⚖️ License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
+Architect Command Center is distributed under the MIT License.

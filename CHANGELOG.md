@@ -60,5 +60,5 @@ All notable changes to this project will be documented in this file.
 - Implemented structured logging in `services/logger.ts`.
 - Integrated `Vitest` for unit testing.
 - Added GitHub Actions CI workflow.
- type in `App.tsx`.
+- Added missing `JobStatus` type in `App.tsx`.
 - Fixed missing `JobStatus` import in `App.tsx`.

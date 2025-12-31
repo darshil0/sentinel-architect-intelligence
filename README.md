@@ -6,7 +6,11 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 ![AI Model](https://img.shields.io/badge/AI-Gemini--2.0--Flash-blue)
 ![Quality](https://img.shields.io/badge/Quality-Enforced-success)
 
-## 🚀 Core Intelligence Modules
+- **Resume-Job Description Diffing**: Visually compare your master resume against a job description to identify gaps and areas for improvement.
+- **AI-Powered Optimization**: Utilize the Gemini API to generate optimized resume artifacts tailored to specific job requirements.
+- **Job Application Tracking**: Manage your job application pipeline with a Kanban board, tracking your progress from discovery to offer.
+- **Signal Injection**: Easily add new job opportunities (signals) to your dashboard for tracking and optimization.
+- **Automated Agent Scheduling**: Schedule and automate job scraper agents to run at specific intervals, ensuring a continuous flow of new opportunities.
 
 - **💎 High-Integrity Diffing**: Direct comparison between your Master Profile and target Job Descriptions with real-time gap analysis.
 - **⚡ Zero-Hallucination Optimization**: Tailor your resume using the Architect-Tier optimizer that enforces a strict token-intersection guardrail.
@@ -17,7 +21,11 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 - **🧬 Signal Injection**: Manual entry for high-value job signals with automated legitimacy auditing.
 - **🧪 Scraper Lab**: Sandbox environment for simulating and managing job discovery agents.
 
-## 🛠️ Technical Arsenal
+- **Frontend**: React, TypeScript, Tailwind CSS, Vite
+- **Backend**: Node.js, Express
+- **AI Integration**: Google Gemini API
+- **Linting**: ESLint
+- **Testing**: Playwright
 
 - **Frontend**: React 19 + TypeScript + Tailwind CSS 4.0 (Custom Glassmorphism Design System)
 - **Backend**: Node.js v20 (ES Modules) + Express 5.0
@@ -79,10 +87,10 @@ This structure leverages **Absolute Path Aliasing** (`@/`) for scalable and main
 
 ## 🧪 Quality Audit
 
-Execute the full verification suite:
-```bash
-npm test
-```
+- **Error Handling**: While some error handling is in place, it can be improved to provide more granular feedback to the user.
+- **Incomplete CI/CD**: The project lacks a continuous integration and deployment pipeline, which is essential for maintaining code quality and automating releases.
+- **No Versioning and Changelog**: A formal versioning system and changelog are needed to track fixes, new features, and breaking changes.
+- **Absence of a Logger**: There is no structured logger to record important events and errors, which makes debugging and monitoring more difficult.
 
 ## 📜 Archives
 

@@ -1,15 +1,26 @@
 import express from 'express';
-import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
+// Architect System Security: Rate limiting to prevent API budget depletion
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: { error: 'Architectural System Alert: Too many requests from this endpoint. Please wait for the sync window to reset.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Support larger resume base64 payloads
 
 // Middleware to check for API key
 app.use((req, res, next) => {
@@ -25,7 +36,7 @@ app.post('/api/generate', async (req, res) => {
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
-    
+
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
@@ -35,7 +46,7 @@ app.post('/api/generate', async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error('Generation Error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({ 
+    res.status(error.response?.status || 500).json({
       error: 'Failed to generate content',
       details: error.response?.data?.error?.message || error.message
     });
@@ -58,12 +69,12 @@ app.post('/api/parse', async (req, res) => {
         },
       }
     );
-    
+
     const text = response.data.candidates[0].content.parts[0].text;
     res.json(JSON.parse(text));
   } catch (error) {
     console.error('Parsing Error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({ 
+    res.status(error.response?.status || 500).json({
       error: 'Failed to parse resume',
       details: error.response?.data?.error?.message || error.message
     });

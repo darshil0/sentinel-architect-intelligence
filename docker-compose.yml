@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  architect-center:
+    build: .
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - VITE_API_URL=http://localhost:3001
+    restart: unless-stopped

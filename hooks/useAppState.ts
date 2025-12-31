@@ -6,11 +6,25 @@ import logger from '../services/logger';
 
 export type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
 
+const STORAGE_KEYS = {
+    JOBS: 'architect_jobs',
+    RESUME: 'architect_resume',
+};
+
 export function useAppState(initialJobs: JobMatch[], initialResume: MasterResume) {
+    // Load from localStorage or use initial values
+    const [jobs, setJobs] = useState<JobMatch[]>(() => {
+        const saved = localStorage.getItem(STORAGE_KEYS.JOBS);
+        return saved ? JSON.parse(saved) : initialJobs;
+    });
+
+    const [masterResume, setMasterResume] = useState<MasterResume>(() => {
+        const saved = localStorage.getItem(STORAGE_KEYS.RESUME);
+        return saved ? JSON.parse(saved) : initialResume;
+    });
+
     const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-    const [jobs, setJobs] = useState<JobMatch[]>(initialJobs);
     const [selectedJobId, setSelectedJobId] = useState<string>('');
-    const [masterResume, setMasterResume] = useState<MasterResume>(initialResume);
     const [isLoading, setIsLoading] = useState(false);
     const [generatedCode, setGeneratedCode] = useState('');
     const [explanation, setExplanation] = useState('');
@@ -18,6 +32,15 @@ export function useAppState(initialJobs: JobMatch[], initialResume: MasterResume
     const [editingJob, setEditingJob] = useState<JobMatch | null>(null);
     const [notification, setNotification] = useState<string | null>(null);
     const [isComplianceApproved, setIsComplianceApproved] = useState(false);
+
+    // Sync to localStorage
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
+    }, [jobs]);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.RESUME, JSON.stringify(masterResume));
+    }, [masterResume]);
 
     const filteredJobs = useMemo(
         () => jobs.filter((j) => (j.legitimacy ?? 0) >= 0.7),

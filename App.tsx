@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { MOCK_JOBS, MASTER_RESUME_JSON, ARCHITECT_OPTIMIZER_ENDPOINT } from './constants';
 import { JobMatch, MasterResume } from './types';
 import { useAppState, Tab } from './hooks/useAppState';
@@ -11,6 +12,7 @@ import Editor from './components/Editor';
 import ScraperEngine from './components/ScraperEngine';
 import InjectSignalModal from './components/InjectSignalModal';
 import Notification from './components/Notification';
+import ResumeParser from './components/ResumeParser';
 
 const App: React.FC = () => {
   const {
@@ -68,8 +70,8 @@ const App: React.FC = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab
-                  ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
+                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
                 }`}
             >
               {tab}
@@ -219,17 +221,23 @@ const App: React.FC = () => {
 
         {activeTab === 'blueprints' && (
           <div className="flex-grow grid grid-cols-2 gap-8 overflow-hidden">
-            <div className="glass-panel overflow-hidden flex flex-col">
-              <Editor
-                label="Master Profile (JSON)"
-                value={JSON.stringify(masterResume, null, 2)}
-                onChange={(v) => {
-                  try {
-                    const res = JSON.parse(v);
-                    if (res.coreCompetencies) setMasterResume(res);
-                  } catch { }
-                }}
-              />
+            <div className="flex flex-col gap-8 overflow-hidden">
+              <ResumeParser onParsed={(res) => {
+                setMasterResume(res);
+                setNotification('Master Source Ingested Successfully.');
+              }} />
+              <div className="glass-panel flex-grow overflow-hidden flex flex-col">
+                <Editor
+                  label="Master Profile (JSON)"
+                  value={JSON.stringify(masterResume, null, 2)}
+                  onChange={(v) => {
+                    try {
+                      const res = JSON.parse(v);
+                      if (res.coreCompetencies) setMasterResume(res);
+                    } catch { }
+                  }}
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-8">
               <div className="glass-panel flex-grow overflow-hidden">

@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MOCK_JOBS, MASTER_RESUME_JSON, ARCHITECT_OPTIMIZER_ENDPOINT } from './constants';
-import { JobMatch, MasterResume } from './types';
-import { useAppState, Tab } from './hooks/useAppState';
+import { MOCK_JOBS, MASTER_RESUME_JSON, ARCHITECT_OPTIMIZER_ENDPOINT } from '@/constants';
+import { JobMatch, MasterResume } from '@/types';
+import { useAppState, Tab } from '@/hooks/useAppState';
 
-import JobCard from './components/JobCard';
-import DiffViewer from './components/DiffViewer';
-import ScoreBreakdown from './components/ScoreBreakdown';
-import ComplianceFooter from './components/ComplianceFooter';
-import Editor from './components/Editor';
-import ScraperEngine from './components/ScraperEngine';
-import InjectSignalModal from './components/InjectSignalModal';
-import Notification from './components/Notification';
-import ResumeParser from './components/ResumeParser';
+import JobCard from '@/components/JobCard';
+import DiffViewer from '@/components/DiffViewer';
+import ScoreBreakdown from '@/components/ScoreBreakdown';
+import ComplianceFooter from '@/components/ComplianceFooter';
+import Editor from '@/components/Editor';
+import ScraperEngine from '@/components/ScraperEngine';
+import InjectSignalModal from '@/components/InjectSignalModal';
+import Notification from '@/components/Notification';
+import ResumeParser from '@/components/ResumeParser';
 
 const App: React.FC = () => {
   const {

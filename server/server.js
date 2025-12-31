@@ -1,7 +1,7 @@
 import express from 'express';
+import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import rateLimit from 'express-rate-limit';
 
 dotenv.config();

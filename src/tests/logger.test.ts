@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import logger from '../services/logger';
+import logger from '@/services/logger';
 
 describe('Logger', () => {
     it('should log info messages', () => {

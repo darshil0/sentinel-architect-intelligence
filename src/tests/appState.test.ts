@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useAppState } from '../hooks/useAppState';
-import { MOCK_JOBS, MASTER_RESUME_JSON } from '../constants';
+import { useAppState } from '@/hooks/useAppState';
+import { MOCK_JOBS, MASTER_RESUME_JSON } from '@/constants';
 
 // Mock localStorage
 const localStorageMock = (() => {

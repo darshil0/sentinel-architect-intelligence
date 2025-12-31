@@ -56,12 +56,26 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 4.  **Launch Systems:**
     Terminal 1 (Backend):
     ```bash
-    node server.js
+    npm run server
     ```
     Terminal 2 (Frontend):
     ```bash
     npm run dev
     ```
+
+## 🏗️ Project Architecture
+
+The Architect Command Center follows a production-grade decoupled architecture:
+
+- `src/`: Core frontend implementation including React components, custom hooks, and types.
+  - `components/`: Modular UI units (Glassmorphism design system).
+  - `hooks/`: Centralized state and form logic (`useAppState`, `useForm`).
+  - `services/`: AI and logging orchestrators.
+- `server/`: Express.js backend for secure AI model communication and rate limiting.
+- `e2e/`: End-to-end verification suite powered by Playwright.
+- `src/tests/`: High-integrity unit and component audit suite.
+
+This structure leverages **Absolute Path Aliasing** (`@/`) for scalable and maintainable module resolution.
 
 ## 🧪 Quality Audit
 

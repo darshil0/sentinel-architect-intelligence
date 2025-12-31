@@ -1,5 +1,5 @@
 import React, { useRef, useMemo } from 'react';
-import { MasterResume } from '../types';
+import { MasterResume } from '@/types';
 
 interface DiffViewerProps {
   original: string;

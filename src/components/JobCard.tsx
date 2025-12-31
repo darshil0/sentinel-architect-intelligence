@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { JobMatch } from '../types';
+import { JobMatch } from '@/types';
 
 interface JobCardProps {
   job: JobMatch;
@@ -68,8 +68,8 @@ const JobCard: React.FC<JobCardProps> = ({ job, isActive = false, onFollowUp }) 
           <span
             key={`${h}-${i}`}
             className={`text-[9px] px-2.5 py-1 rounded-lg border uppercase font-bold tracking-wider transition-all ${isStale
-                ? 'bg-amber-500/5 text-amber-500 border-amber-500/20'
-                : 'bg-slate-950/50 text-slate-400 border-slate-800 group-hover:border-slate-700'
+              ? 'bg-amber-500/5 text-amber-500 border-amber-500/20'
+              : 'bg-slate-950/50 text-slate-400 border-slate-800 group-hover:border-slate-700'
               }`}
           >
             {h}

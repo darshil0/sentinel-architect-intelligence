@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EngineId, Schedule } from '../types';
+import { EngineId, Schedule } from '@/types';
 
 interface AgentSchedulerProps {
   schedules: Schedule[];
@@ -79,11 +79,11 @@ const AgentScheduler: React.FC<AgentSchedulerProps> = ({
       </div>
 
       <div className="p-4 border-t border-slate-800/60 bg-slate-900/20 flex items-center gap-2">
-         <select
+        <select
           value={selectedAgent}
           onChange={(e) => setSelectedAgent(e.target.value as EngineId)}
           className="flex-shrink-0 bg-slate-800 border border-slate-700 rounded-lg pl-3 pr-8 py-2 text-xs text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 appearance-none"
-           style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%2364748b\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%2364748b\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
         >
           <option value="linkedin">LinkedIn</option>
           <option value="dice">Dice</option>

@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { JobMatch, MasterResume, JobStatus } from '../types';
-import { geminiService } from '../services/geminiService';
-import { DEFAULT_SYSTEM_CONTEXT } from '../constants';
-import logger from '../services/logger';
+import { JobMatch, MasterResume, JobStatus } from '@/types';
+import { geminiService } from '@/services/geminiService';
+import { DEFAULT_SYSTEM_CONTEXT } from '@/constants';
+import logger from '@/services/logger';
 
 export type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
 

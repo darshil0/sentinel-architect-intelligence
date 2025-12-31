@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2025-12-31
+
+### Added
+- **Architectural Reorganization**: Migrated all frontend source code to `src/` for better isolation.
+- **Backend Decoupling**: Moved server logic to `server/` directory.
+- **E2E Isolation**: Dedicated `e2e/` directory for Playwright test suites.
+- **Path Aliasing**: Configured `@/` as the primary absolute path alias for cleaner, maintainable imports.
+- **ESM Node Compliance**: Implemented static `__dirname` resolution in `vite.config.ts` for native ES modules.
+
+### Changed
+- Refactored all internal imports to leverage the new `@/` path alias system.
+- Updated `package.json` scripts to reflect the new directory hierarchy.
+- Optimized `tsconfig.json` with explicit inclusion/exclusion rules for better IDE performance.
+- Fixed internal import references in services and hooks to match the new `src/` hierarchy.
+
 ## [0.3.0] - 2025-12-30
 
 ### Added

@@ -1,0 +1,17 @@
+{
+    "css.customData": [],
+    "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "tailwindCSS.includeLanguages": {
+        "plaintext": "ts",
+        "typescript": "ts",
+        "typescriptreact": "tsx"
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+        "strings": "on"
+    }
+}

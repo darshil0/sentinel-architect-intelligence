@@ -6,33 +6,26 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 ![AI Model](https://img.shields.io/badge/AI-Gemini--2.0--Flash-blue)
 ![Quality](https://img.shields.io/badge/Quality-Enforced-success)
 
-- **Resume-Job Description Diffing**: Visually compare your master resume against a job description to identify gaps and areas for improvement.
-- **AI-Powered Optimization**: Utilize the Gemini API to generate optimized resume artifacts tailored to specific job requirements.
-- **Job Application Tracking**: Manage your job application pipeline with a Kanban board, tracking your progress from discovery to offer.
-- **Signal Injection**: Easily add new job opportunities (signals) to your dashboard for tracking and optimization.
-- **Automated Agent Scheduling**: Schedule and automate job scraper agents to run at specific intervals, ensuring a continuous flow of new opportunities.
+## 🚀 Core Intelligence Modules
 
 - **💎 High-Integrity Diffing**: Direct comparison between your Master Profile and target Job Descriptions with real-time gap analysis.
 - **⚡ Zero-Hallucination Optimization**: Tailor your resume using the Architect-Tier optimizer that enforces a strict token-intersection guardrail.
-- **📥 Master Source Ingestion**: Integrated module to upload PDFs or paste raw resume text for automated Gemini-driven structural parsing.
-- **📊 Intelligence Kanban**: Manage your career pipeline through a specialized command board (Discovery → Offer).
+- **📤 Resilient Master Ingest**: Integrated module to upload PDFs with automated structural parsing and AI-driven cleaning.
+- **📊 Intelligence Kanban**: Manage your career pipeline through a specialized command board with automated stale-signal detection.
 - **📡 Stale Signal Recovery**: AI-driven follow-up orchestration for applications that have exceeded the 7-day response threshold.
 - **💾 Local Persistence**: High-integrity synchronization with browser storage ensuring your signals and profile data persist across sessions.
 - **🧬 Signal Injection**: Manual entry for high-value job signals with automated legitimacy auditing.
 - **🧪 Scraper Lab**: Sandbox environment for simulating and managing job discovery agents.
+- **✨ Fluid User Experience**: Premium motion-integrated interface with glassmorphic transitions and micro-interactions.
 
-- **Frontend**: React, TypeScript, Tailwind CSS, Vite
-- **Backend**: Node.js, Express
-- **AI Integration**: Google Gemini API
-- **Linting**: ESLint
-- **Testing**: Playwright
+## 🛠️ Technical Arsenal
 
-- **Frontend**: React 19 + TypeScript + Tailwind CSS 4.0 (Custom Glassmorphism Design System)
-- **Backend**: Node.js v20 (ES Modules) + Express 5.0
+- **Frontend**: React 19 + TypeScript + Framer Motion (Premium Motion System)
+- **Styling**: Tailwind CSS 4.0 (Custom Glassmorphism Design Language)
+- **Backend**: Node.js v20 (ES Modules) + Express 5.0 (Resilience Layer)
 - **Brain**: Google Gemini AI (1.5 Pro & 2.0 Flash)
-- **Monitoring**: Structured Architect-Tier Logger
-- **Quality**: Vitest (Unit) + Playwright (E2E)
-- **Pipeline**: GitHub Actions CI
+- **Quality**: Vitest (Unit & Component) + Playwright (E2E)
+- **DevEx**: Standardized Environment (.env.example) + VS Code Intelligence Suite
 
 ## 🏁 Deployment Protocol
 
@@ -55,10 +48,9 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
     ```
 
 3.  **Configure Environment Variables:**
-    Create a `.env` file:
-    ```env
-    GEMINI_API_KEY=your_key_here
-    VITE_API_URL=http://localhost:3001
+    ```bash
+    cp .env.example .env
+    # Edit .env with your GEMINI_API_KEY
     ```
 
 4.  **Launch Systems:**
@@ -76,26 +68,26 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 The Architect Command Center follows a production-grade decoupled architecture:
 
 - `src/`: Core frontend implementation including React components, custom hooks, and types.
-  - `components/`: Modular UI units (Glassmorphism design system).
+  - `components/`: Modular UI units including specialized `JobCard` and `DiffViewer`.
   - `hooks/`: Centralized state and form logic (`useAppState`, `useForm`).
-  - `services/`: AI and logging orchestrators.
-- `server/`: Express.js backend for secure AI model communication and rate limiting.
+  - `services/`: AI orchestrators and structural loggers.
+- `server/`: Express.js backend with built-in AI resilience and rate limiting.
 - `e2e/`: End-to-end verification suite powered by Playwright.
-- `src/tests/`: High-integrity unit and component audit suite.
+- `src/tests/`: High-integrity unit and component audit suite (Target 100% core logic coverage).
 
 This structure leverages **Absolute Path Aliasing** (`@/`) for scalable and maintainable module resolution.
 
 ## 🧪 Quality Audit
 
-- **Error Handling**: While some error handling is in place, it can be improved to provide more granular feedback to the user.
-- **Incomplete CI/CD**: The project lacks a continuous integration and deployment pipeline, which is essential for maintaining code quality and automating releases.
-- **No Versioning and Changelog**: A formal versioning system and changelog are needed to track fixes, new features, and breaking changes.
-- **Absence of a Logger**: There is no structured logger to record important events and errors, which makes debugging and monitoring more difficult.
+Execute the full verification suite (Architect tier):
+```bash
+npm test
+```
 
 ## 📜 Archives
 
-- **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the Architect’s record of updates.
-- **Components**: UI powered by custom glass panels and emerald-core gradients.
+- **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the detailed record of architectural iterations.
+- **Design System**: UI powered by custom glass panels, emerald-core gradients, and fluid motion.
 
 ## ⚖️ License
 

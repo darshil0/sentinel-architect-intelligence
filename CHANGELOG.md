@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4.0] - 2025-12-31
+## [0.4.0] - 2025-12-30
 
 ### Added
 - **Architectural Reorganization**: Migrated all frontend source code to `src/` for better isolation.
@@ -10,12 +10,18 @@ All notable changes to this project will be documented in this file.
 - **E2E Isolation**: Dedicated `e2e/` directory for Playwright test suites.
 - **Path Aliasing**: Configured `@/` as the primary absolute path alias for cleaner, maintainable imports.
 - **ESM Node Compliance**: Implemented static `__dirname` resolution in `vite.config.ts` for native ES modules.
+- **Resilient AI Ingestion**: Added structural sanity checks and markdown cleaning logic for Gemini AI responses.
+- **Portability Protocol**: Integrated `.env.example` template for standardized environment configuration.
+- **Component Audit Suite**: Added component-level tests for `JobCard` to verify stale signal logic and UI state.
+- **Developer Tooling**: Configured VS Code settings for seamless Tailwind CSS integration and linting.
+- **Premium UX Polish**: Implemented fluid tab transitions and micro-interactions in `JobCard`.
 
 ### Changed
 - Refactored all internal imports to leverage the new `@/` path alias system.
 - Updated `package.json` scripts to reflect the new directory hierarchy.
 - Optimized `tsconfig.json` with explicit inclusion/exclusion rules for better IDE performance.
 - Fixed internal import references in services and hooks to match the new `src/` hierarchy.
+- Incremented package version to `0.4.0`.
 
 ## [0.3.0] - 2025-12-30
 

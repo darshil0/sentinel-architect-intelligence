@@ -71,7 +71,19 @@ app.post('/api/parse', async (req, res) => {
     );
 
     const text = response.data.candidates[0].content.parts[0].text;
-    res.json(JSON.parse(text));
+
+    // Architect Resilience: Clean and parse the response
+    try {
+      // Remove potential markdown code blocks if the model ignored instructions
+      const cleanJSON = text.replace(/```json\n?|```/g, '').trim();
+      res.json(JSON.parse(cleanJSON));
+    } catch (parseError) {
+      console.error('Architectural Sync Error: Malformed JSON from model:', text);
+      res.status(500).json({
+        error: 'System Integrity Breach: Malformed data received from AI model.',
+        details: 'The structural mapping failed due to non-standard response format.'
+      });
+    }
   } catch (error) {
     console.error('Parsing Error:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({

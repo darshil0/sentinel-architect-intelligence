@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { GHOST_JOB_DETECTOR_SOURCE, ARCHITECT_MASTER_BLUEPRINT } from '../constants';
+import { GHOST_JOB_DETECTOR_SOURCE, ARCHITECT_MASTER_BLUEPRINT } from '@/constants';
 import AgentScheduler from './AgentScheduler';
-import { Schedule } from '../types';
+import { Schedule } from '@/types';
 
 type EngineId = 'linkedin' | 'dice' | 'ghost';
 
@@ -179,8 +179,8 @@ class DiceDiscoveryAgent:
     activeEngine === 'linkedin'
       ? linkedinCode
       : activeEngine === 'dice'
-      ? diceCode
-      : GHOST_JOB_DETECTOR_SOURCE || '# GHOST_JOB_DETECTOR_SOURCE not configured';
+        ? diceCode
+        : GHOST_JOB_DETECTOR_SOURCE || '# GHOST_JOB_DETECTOR_SOURCE not configured';
 
   return (
     <div className="flex flex-col h-full gap-6 animate-in fade-in duration-500 overflow-hidden">
@@ -199,11 +199,10 @@ class DiceDiscoveryAgent:
               key={id}
               type="button"
               onClick={() => handleSetEngine(id as EngineId)}
-              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                activeEngine === id
+              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeEngine === id
                   ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
                   : 'text-slate-500 hover:text-slate-300'
-              }`}
+                }`}
             >
               {id}
             </button>
@@ -260,11 +259,10 @@ class DiceDiscoveryAgent:
                 type="button"
                 disabled={isSimulating}
                 onClick={runSimulation}
-                className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  isSimulating
+                className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isSimulating
                     ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                     : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-[0_10px_30px_-5px_rgba(16,185,129,0.3)]'
-                }`}
+                  }`}
               >
                 {isSimulating ? 'Executing Simulation...' : `Deploy ${activeEngine.toUpperCase()} Agent`}
               </button>

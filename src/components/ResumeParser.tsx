@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { geminiService } from '../services/geminiService';
-import { MasterResume } from '../types';
+import { geminiService } from '@/services/geminiService';
+import { MasterResume } from '@/types';
 
 interface ResumeParserProps {
   onParsed: (resume: MasterResume) => void;

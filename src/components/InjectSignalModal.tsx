@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
-import { JobMatch } from '../types';
-import { useForm } from '../hooks/useForm';
+import { JobMatch } from '@/types';
+import { useForm } from '@/hooks/useForm';
 
 interface InjectSignalModalProps {
   isOpen: boolean;
@@ -14,13 +14,14 @@ interface FormData {
   title: string;
   location: string;
   highlights: string;
+  [key: string]: any;
 }
 
-const InjectSignalModal: React.FC<InjectSignalModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  editingJob, 
-  onSave 
+const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
+  isOpen,
+  onClose,
+  editingJob,
+  onSave
 }) => {
   const initialFormState: FormData = {
     company: '',
@@ -28,7 +29,7 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
     location: '',
     highlights: '',
   };
-  
+
   const { formData, handleChange, setFormData, resetForm } = useForm<FormData>(initialFormState);
 
   // Reset form when modal opens/closes or editingJob changes
@@ -37,7 +38,7 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
       resetForm();
       return;
     }
-    
+
     if (editingJob) {
       setFormData({
         company: editingJob.company,
@@ -52,7 +53,7 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
 
   const handleSaveJob = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Client-side validation
     if (!formData.company.trim() || !formData.title.trim() || !formData.location.trim()) {
       return;
@@ -94,15 +95,15 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
     resetForm();
   }, [onClose, resetForm]);
 
-  const isSubmitDisabled = !formData.company.trim() || 
-                          !formData.title.trim() || 
-                          !formData.location.trim() || 
-                          !formData.highlights.trim();
+  const isSubmitDisabled = !formData.company.trim() ||
+    !formData.title.trim() ||
+    !formData.location.trim() ||
+    !formData.highlights.trim();
 
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0f172a]/95 backdrop-blur-xl p-4 animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
@@ -126,78 +127,78 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
             ×
           </button>
         </div>
-        
+
         <form onSubmit={handleSaveJob} className="space-y-6" noValidate>
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label htmlFor="company" className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
                 Company
               </label>
-              <input 
+              <input
                 id="company"
-                name="company" 
-                placeholder="e.g., Anthropic" 
-                value={formData.company} 
-                onChange={handleChange} 
-                required 
-                className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500" 
+                name="company"
+                placeholder="e.g., Anthropic"
+                value={formData.company}
+                onChange={handleChange}
+                required
+                className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500"
               />
             </div>
             <div>
               <label htmlFor="title" className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
                 Title
               </label>
-              <input 
+              <input
                 id="title"
-                name="title" 
-                placeholder="e.g., Senior SDET" 
-                value={formData.title} 
-                onChange={handleChange} 
-                required 
-                className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500" 
+                name="title"
+                placeholder="e.g., Senior SDET"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500"
               />
             </div>
           </div>
-          
+
           <div>
             <label htmlFor="location" className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
               Location
             </label>
-            <input 
+            <input
               id="location"
-              name="location" 
-              placeholder="e.g., SF / Remote" 
-              value={formData.location} 
-              onChange={handleChange} 
-              required 
-              className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500" 
+              name="location"
+              placeholder="e.g., SF / Remote"
+              value={formData.location}
+              onChange={handleChange}
+              required
+              className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 invalid:border-red-500"
             />
           </div>
-          
+
           <div>
             <label htmlFor="highlights" className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
               Requirements (Comma Separated)
             </label>
-            <textarea 
+            <textarea
               id="highlights"
-              name="highlights" 
-              placeholder="Python, LLM Evaluation, Pytest, FastAPI" 
-              value={formData.highlights} 
-              onChange={handleChange} 
+              name="highlights"
+              placeholder="Python, LLM Evaluation, Pytest, FastAPI"
+              value={formData.highlights}
+              onChange={handleChange}
               rows={4}
-              className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 resize-vertical invalid:border-red-500" 
+              className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600 resize-vertical invalid:border-red-500"
             />
           </div>
-          
+
           <div className="flex gap-4 pt-4">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleClose}
               className="flex-1 py-4 bg-slate-800 text-slate-400 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all"
             >
               Abort
             </button>
-            <button 
+            <button
               type="submit"
               disabled={isSubmitDisabled}
               className="flex-1 py-4 bg-emerald-500 text-slate-950 rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-600/50"

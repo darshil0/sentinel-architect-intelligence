@@ -1,5 +1,5 @@
-import { GenerationRequest, SystemContext, MasterResume, JobMatch } from "../types";
-import { SYSTEM_PROMPT_TEMPLATE } from "../constants";
+import { GenerationRequest, SystemContext, MasterResume, JobMatch } from "@/types";
+import { SYSTEM_PROMPT_TEMPLATE } from "@/constants";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 

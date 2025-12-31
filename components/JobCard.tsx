@@ -19,78 +19,77 @@ const JobCard: React.FC<JobCardProps> = ({ job, isActive = false, onFollowUp }) 
     return diffDays >= 7;
   }, [job.status, job.submissionDate]);
 
-  const baseBorderColor = isHighMatch ? 'border-emerald-500' : 'border-slate-700';
   const stateClasses = isActive
-    ? 'bg-slate-800/50 border-emerald-500/70'
+    ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
     : isStale
-      ? 'bg-amber-500/5 border-amber-500/50 hover:bg-amber-500/10'
-      : 'bg-slate-900 border-slate-800 hover:border-emerald-500/30';
+      ? 'bg-amber-500/5 border-amber-500/30 hover:bg-amber-500/10'
+      : 'bg-slate-900/40 border-slate-800/60 hover:border-slate-700 hover:bg-slate-800/40';
 
   return (
     <div
-      className={`p-4 transition-all cursor-pointer group shadow-sm relative overflow-hidden rounded-2xl border-l-4 ${baseBorderColor} ${stateClasses}`}
+      className={`p-5 transition-all duration-300 cursor-pointer group relative overflow-hidden rounded-[24px] border backdrop-blur-sm ${stateClasses}`}
     >
+      {isHighMatch && !isStale && (
+        <div className="absolute -right-8 -top-8 w-16 h-16 bg-emerald-500/10 rotate-45 blur-2xl group-hover:bg-emerald-500/20 transition-all duration-500" />
+      )}
+
       {isStale && (
         <div className="absolute top-0 right-0">
-          <div className="bg-amber-500 text-slate-950 text-[7px] font-black px-2 py-0.5 uppercase tracking-widest rounded-bl-lg shadow-lg animate-pulse">
+          <div className="bg-amber-500 text-slate-950 text-[8px] font-black px-3 py-1 uppercase tracking-[0.2em] rounded-bl-xl shadow-lg animate-pulse">
             Stale Signal
           </div>
         </div>
       )}
 
-      <div className="flex justify-between items-start mb-2">
-        <div className="flex flex-col">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex flex-col gap-1">
           <span
-            className={`text-[10px] font-black uppercase tracking-widest ${
-              isStale ? 'text-amber-400' : 'text-emerald-400'
-            }`}
+            className={`text-[10px] font-black uppercase tracking-[0.2em] ${isStale ? 'text-amber-400' : 'text-emerald-400'
+              }`}
           >
             {job.company}
           </span>
-          <h4 className="text-sm font-bold text-slate-100 group-hover:text-white truncate max-w-[150px]">
+          <h4 className="text-base font-bold text-slate-100 group-hover:text-white transition-colors truncate max-w-[180px]">
             {job.title}
           </h4>
         </div>
-        <div className="text-right">
-          <div className="text-[11px] font-black text-slate-400 font-mono tracking-tighter">
+        <div className="flex flex-col items-end">
+          <div className="text-lg font-black text-white font-mono leading-none tracking-tighter">
             {job.score.toFixed(1)}
           </div>
-          <div className="text-[8px] text-slate-600 uppercase font-black tracking-tight">
-            {job.sourceTier}
+          <div className="text-[9px] text-slate-500 uppercase font-bold tracking-widest mt-1">
+            Match
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-1.5 mt-3">
+      <div className="flex flex-wrap gap-2 mt-2">
         {job.highlights.slice(0, 3).map((h, i) => (
           <span
             key={`${h}-${i}`}
-            className={`text-[8px] px-1.5 py-0.5 rounded border uppercase font-black ${
-              isStale
-                ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-                : 'bg-slate-950 text-slate-500 border-slate-800'
-            }`}
+            className={`text-[9px] px-2.5 py-1 rounded-lg border uppercase font-bold tracking-wider transition-all ${isStale
+                ? 'bg-amber-500/5 text-amber-500 border-amber-500/20'
+                : 'bg-slate-950/50 text-slate-400 border-slate-800 group-hover:border-slate-700'
+              }`}
           >
             {h}
           </span>
         ))}
       </div>
 
-      <div className="mt-3 pt-3 border-t border-slate-800/50 flex flex-col gap-3">
+      <div className="mt-5 pt-4 border-t border-slate-800/50 flex flex-col gap-4">
         <div className="flex justify-between items-center">
-          <div className="flex flex-col">
-            <span className="text-[9px] text-slate-600 font-bold uppercase italic">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">
               {job.postedDate}
             </span>
             {job.submissionDate && (
               <span
-                className={`text-[8px] font-black uppercase tracking-tighter ${
-                  isStale ? 'text-amber-500/70' : 'text-slate-500'
-                }`}
+                className={`text-[9px] font-black uppercase tracking-tighter ${isStale ? 'text-amber-500/70' : 'text-slate-600'
+                  }`}
               >
-                Sub:{' '}
+                Submitted:{' '}
                 {new Date(job.submissionDate).toLocaleDateString(undefined, {
-                  year: 'numeric',
                   month: 'short',
                   day: 'numeric',
                 })}
@@ -99,8 +98,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, isActive = false, onFollowUp }) 
           </div>
 
           {job.legitimacy > 0.9 && !isStale && (
-            <div className="relative group/legit">
-              <span className="text-[8px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 font-black uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+              <div className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
+              <span className="text-[9px] text-blue-400 font-black uppercase tracking-widest">
                 Verified
               </span>
             </div>
@@ -113,9 +113,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, isActive = false, onFollowUp }) 
               e.stopPropagation();
               onFollowUp?.(job);
             }}
-            className="w-full py-2 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/10"
+            className="w-full py-2.5 bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98]"
           >
-            Generate Follow-up Draft
+            Draft Follow-up
           </button>
         )}
       </div>

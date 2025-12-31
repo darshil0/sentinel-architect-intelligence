@@ -6,7 +6,8 @@ import {
   MASTER_RESUME_JSON,
   ARCHITECT_OPTIMIZER_ENDPOINT,
 } from './constants';
-import { JobMatch, MasterResume } from './types';
+import { JobMatch, MasterResume, JobStatus } from './types';
+
 import JobCard from './components/JobCard';
 import DiffViewer from './components/DiffViewer';
 import ScoreBreakdown from './components/ScoreBreakdown';
@@ -18,7 +19,7 @@ import Notification from './components/Notification';
 import logger from './services/logger';
 
 type Tab = 'dashboard' | 'kanban' | 'scrapers' | 'blueprints';
-type JobStatus = 'discovery' | 'tailoring' | 'submitted' | 'interview' | 'offer';
+
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -91,9 +92,8 @@ const App: React.FC = () => {
           activeScenario: {
             id: 'opt-v2',
             title: selectedJob.title,
-            jd: `Requires: ${(selectedJob.highlights ?? []).join(', ')}. ${
-              selectedJob.company
-            } infrastructure.`,
+            jd: `Requires: ${(selectedJob.highlights ?? []).join(', ')}. ${selectedJob.company
+              } infrastructure.`,
             resumeSummary: masterResume.summary,
             masterResume,
             expectedGaps: [],
@@ -138,7 +138,8 @@ const App: React.FC = () => {
   );
 
   const TABS: Tab[] = ['dashboard', 'kanban', 'scrapers', 'blueprints'];
-  const STATUSES: JobStatus[] = ['discovery', 'tailoring', 'submitted', 'interview', 'offer'];
+  const STATUSES: JobStatus[] = ['discovery', 'tailoring', 'submitted', 'screening', 'interview', 'offer'];
+
 
   const handleEditJob = useCallback((job: JobMatch) => {
     setEditingJob(job);
@@ -150,6 +151,25 @@ const App: React.FC = () => {
     setEditingJob(null);
   }, []);
 
+  const handleFollowUp = useCallback(
+    async (job: JobMatch) => {
+      logger.info({ jobId: job.id }, 'Generating follow-up email');
+      setIsLoading(true);
+      try {
+        const email = await geminiService.generateFollowUpEmail(masterResume, job);
+        setExplanation(`FOLLOW-UP DRAFT FOR ${job.company.toUpperCase()}:\n\n${email}`);
+        setActiveTab('dashboard');
+        setNotification('Follow-up artifact generated.');
+      } catch (error) {
+        logger.error({ error }, 'Follow-up generation failed');
+        setNotification('Failed to generate follow-up draft.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [masterResume]
+  );
+
   const handleJobCardKeyDown = useCallback(
     (jobId: string) =>
       (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -160,6 +180,7 @@ const App: React.FC = () => {
       },
     []
   );
+
 
   const hasDashboardJobs = activeTab === 'dashboard' && filteredJobs.length > 0 && !!selectedJob;
 
@@ -197,11 +218,10 @@ const App: React.FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                activeTab === tab
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                  : 'text-slate-500 hover:text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                : 'text-slate-500 hover:text-slate-300'
+                }`}
               aria-label={`Switch to ${tab} view`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -234,7 +254,7 @@ const App: React.FC = () => {
                       tabIndex={0}
                       className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-lg"
                     >
-                      <JobCard job={job} isActive={selectedJobId === job.id} />
+                      <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUp} />
                     </div>
                   ))}
               </div>
@@ -350,7 +370,8 @@ const App: React.FC = () => {
                         tabIndex={0}
                         className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-lg"
                       >
-                        <JobCard job={job} isActive={selectedJobId === job.id} />
+                        <JobCard job={job} isActive={selectedJobId === job.id} onFollowUp={handleFollowUp} />
+
                       </div>
                     ))}
                 </div>

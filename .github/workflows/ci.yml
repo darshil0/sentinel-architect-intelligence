@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: Run tests
+  test-and-build:
+    name: Install, Test and Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,25 +33,7 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
-name: CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+      - name: Build
+        run: npm run build
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - run: npm install
-    - run: npm run build
-    - run: npm test

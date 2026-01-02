@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-01-02
+
+### 🚀 Major Release: Modern Minimalist UI Redesign
+
+Complete visual overhaul with a modern, minimalist design language featuring glassmorphism effects, improved spacing, and mobile-first responsive design. Transitioned from dark theme to light theme with cyan/blue color palette for enhanced readability and user experience.
+
+### Added
+- **Modern Minimalist UI Design**
+  - Complete redesign from dark to light theme with glassmorphism effects
+  - Cyan/blue primary color palette replacing emerald accents
+  - White backgrounds with subtle gradients and backdrop-blur panels
+  - Premium glass-panel components with enhanced visual hierarchy
+
+- **Enhanced Spacing & Layout**
+  - Improved margin, padding, and gap consistency across all components
+  - Mobile-first responsive design with Tailwind CSS breakpoints
+  - Optimized component spacing for better visual flow and readability
+  - Consistent typography scaling and line heights
+
+- **Glassmorphism Design System**
+  - Custom glass-panel utility classes with backdrop-blur effects
+  - Translucent backgrounds with subtle borders and shadows
+  - Modern button styles (btn-primary, btn-secondary, btn-tertiary)
+  - Enhanced input fields with light theme styling
+
+- **Mobile Responsiveness Improvements**
+  - Responsive header with collapsible navigation on small screens
+  - Adaptive sidebar and main content layout for mobile devices
+  - Touch-friendly button sizes and spacing
+  - Optimized card layouts for mobile viewing
+
+### Changed
+- **Color Palette Transformation**
+  - Primary: `#0891b2` (cyan-600) replacing `#10b981` (emerald-500)
+  - Accent: `#8b5cf6` (purple-500) for secondary highlights
+  - Background: Light gradient from blue-50 to cyan-50
+  - Text: Dark slate colors for improved contrast
+
+- **Component Visual Updates**
+  - `App.tsx`: Header redesign with glassmorphism, tab navigation styling
+  - `JobCard.tsx`: Light background, cyan accents, improved card spacing
+  - `ScoreBreakdown.tsx`: Updated metrics colors, light theme progress bars
+  - `DiffViewer.tsx`: Light code viewer with cyan highlighting
+  - `Notification.tsx`: Cyan gradient notifications
+  - `ComplianceFooter.tsx`: Light theme compliance checks
+
+- **Global CSS Overhaul** (`src/index.css`)
+  - Complete rewrite with modern design tokens
+  - New animation keyframes (fadeInDown, fadeInUp, slideInRight, pulse-soft)
+  - Enhanced scrollbar styling for light theme
+  - Updated utility classes for spacing and typography
+
+### UX/UI Improvements
+- ✅ Improved visual hierarchy with better contrast ratios
+- ✅ Enhanced readability with larger fonts and better spacing
+- ✅ Mobile-optimized layouts with responsive breakpoints
+- ✅ Consistent glassmorphism effects across all panels
+- ✅ Smooth animations and transitions for better user feedback
+
+### Performance
+- Optimized CSS bundle with efficient utility classes
+- Reduced visual clutter for faster perceived load times
+- Improved component rendering with better spacing calculations
+
+### Files Modified
+**Core UI Files:**
+- `src/index.css` - Complete redesign with light theme and glassmorphism
+- `src/App.tsx` - Header and layout updates for light theme
+- `src/components/JobCard.tsx` - Card styling and spacing improvements
+- `src/components/ScoreBreakdown.tsx` - Metrics visualization updates
+- `src/components/DiffViewer.tsx` - Code viewer light theme
+- `src/components/Notification.tsx` - Notification styling
+- `src/components/ComplianceFooter.tsx` - Footer light theme updates
+
+**Documentation:**
+- `README.md` - Updated with v0.6.0 features and design language
+- `CHANGELOG.md` - This entry documenting all UI changes
+
+### Breaking Changes
+- None - fully backward compatible
+
+### Deprecations
+- None
+
+### Known Issues
+- None reported
+
+### Commit
+- Hash: `623849d` (documentation) + UI commits
+- Push Range: Previous commits consolidated
+
+---
+
 ## [0.5.0] - 2026-01-02
 
 ### 🚀 Major Release: Enterprise-Grade Stability & Security

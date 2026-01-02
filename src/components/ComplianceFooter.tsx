@@ -36,7 +36,7 @@ const ComplianceFooter: React.FC<ComplianceFooterProps> = ({
   };
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[#0f172a]/95 backdrop-blur-2xl border-t border-slate-800/80 p-6 z-[100] flex items-center justify-between px-16 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+    <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 p-6 z-[100] flex items-center justify-between px-16 shadow-[0_-20px_50px_rgba(6,182,212,0.08)]">
       <div className="flex gap-16">
         {(Object.entries(CHECK_ITEMS) as [CheckId, string][]).map(([id, label]) => (
           <label
@@ -52,25 +52,25 @@ const ComplianceFooter: React.FC<ComplianceFooterProps> = ({
             <div
               className={`w-5 h-5 rounded-md border-2 transition-all duration-300 flex items-center justify-center ${
                 checks[id]
-                  ? 'bg-emerald-500 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
-                  : 'border-slate-700 bg-slate-900 group-hover:border-slate-600'
+                  ? 'bg-cyan-500 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.18)]'
+                  : 'border-slate-300 bg-white group-hover:border-cyan-300'
               }`}
             >
               {checks[id] && (
-                <svg className="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </div>
             <div className="flex flex-col">
               <span
-                className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${
-                  checks[id] ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-400'
+                className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors ${
+                  checks[id] ? 'text-cyan-700' : 'text-slate-500 group-hover:text-cyan-600'
                 }`}
               >
                 {label}
               </span>
-              <div className={`h-[1px] mt-1 bg-emerald-500 transition-all duration-500 ${checks[id] ? 'w-full opacity-50' : 'w-0 opacity-0'}`} />
+              <div className={`h-[1px] mt-1 bg-cyan-400 transition-all duration-500 ${checks[id] ? 'w-full opacity-50' : 'w-0 opacity-0'}`} />
             </div>
           </label>
         ))}
@@ -78,9 +78,9 @@ const ComplianceFooter: React.FC<ComplianceFooterProps> = ({
 
       <div className="flex items-center gap-12">
         {!allChecked && (
-          <div className="flex items-center gap-3 bg-rose-500/5 px-4 py-2 rounded-xl border border-rose-500/10">
-            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
-            <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em]">Guardrails Engaged</span>
+          <div className="flex items-center gap-3 bg-red-100/60 px-4 py-2 rounded-xl border border-red-200/40">
+            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.3)]" />
+            <span className="text-[10px] font-bold text-red-600 uppercase tracking-[0.2em]">Guardrails Engaged</span>
           </div>
         )}
 
@@ -88,15 +88,15 @@ const ComplianceFooter: React.FC<ComplianceFooterProps> = ({
           type="button"
           disabled={!allChecked || !isReady}
           onClick={onApprove}
-          className={`relative px-14 py-3.5 rounded-2xl font-black text-[12px] uppercase tracking-[0.3em] transition-all overflow-hidden border ${
+          className={`relative px-14 py-3.5 rounded-2xl font-bold text-[12px] uppercase tracking-[0.3em] transition-all overflow-hidden border ${
             allChecked && isReady
-              ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_10px_30px_-5px_rgba(16,185,129,0.3)] hover:translate-y-[-2px] active:translate-y-[0px] hover:shadow-emerald-500/40'
-              : 'bg-slate-900/50 text-slate-700 border-slate-800/50 opacity-40 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400 shadow-[0_10px_30px_-5px_rgba(6,182,212,0.18)] hover:translate-y-[-2px] active:translate-y-[0px] hover:shadow-cyan-500/40'
+              : 'bg-white/60 text-slate-400 border-slate-200/60 opacity-40 cursor-not-allowed'
           }`}
         >
           <span className="relative z-10">{isReady ? 'Approve & Release Signal' : 'Sync Pending...'}</span>
           {allChecked && isReady && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer" />
           )}
         </button>
       </div>

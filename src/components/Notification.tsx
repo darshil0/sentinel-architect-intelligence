@@ -29,7 +29,7 @@ const Notification: React.FC<NotificationProps> = ({ message, onClose }) => {
 
   return (
     <div 
-      className="fixed bottom-8 right-8 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-900 px-6 py-4 rounded-2xl shadow-2xl shadow-emerald-500/25 border border-emerald-400/30 animate-in slide-in-from-bottom-4 duration-300 z-[1000] max-w-sm"
+      className="fixed bottom-8 right-8 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-4 rounded-2xl shadow-[0_8px_32px_rgba(6,182,212,0.25)] border border-white/30 backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-300 z-[1000] max-w-sm"
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
@@ -37,11 +37,11 @@ const Notification: React.FC<NotificationProps> = ({ message, onClose }) => {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 bg-white/80 rounded-full animate-ping"></div>
-          <p className="text-sm font-bold leading-tight tracking-wide">{message}</p>
+          <p className="text-sm font-semibold leading-tight tracking-wide">{message}</p>
         </div>
         <button
           onClick={handleDismiss}
-          className="text-slate-900/80 hover:text-slate-900 hover:bg-white/20 p-1.5 rounded-lg transition-all group focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-emerald-500/20"
+          className="text-white/80 hover:text-white hover:bg-white/20 p-1.5 rounded-lg transition-all group focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-cyan-500/20"
           aria-label="Dismiss notification"
         >
           <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

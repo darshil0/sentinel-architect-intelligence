@@ -1,8 +1,8 @@
-# 🛡️ QA Career Intelligence: Architect Command Center
+# 🛡️ QA Career Intelligence: Architect Hub
 
 A high-integrity Career Intelligence System designed for Senior QA professionals. Featuring a multi-tier discovery orchestrator and zero-hallucination resume optimization powered by Gemini AI.
 
-![Premium Design](https://img.shields.io/badge/Design-Architect--Tier-emerald)
+![Premium Design](https://img.shields.io/badge/Design-Modern--Minimalist-cyan)
 ![AI Model](https://img.shields.io/badge/AI-Gemini--2.0--Flash-blue)
 ![Quality](https://img.shields.io/badge/Quality-Enforced-success)
 
@@ -21,7 +21,7 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 ## 🛠️ Technical Arsenal
 
 - **Frontend**: React 19 + TypeScript + Framer Motion (Premium Motion System)
-- **Styling**: Tailwind CSS 4.0 (Custom Glassmorphism Design Language)
+- **Styling**: Tailwind CSS 4.0 (Modern Glassmorphism Design Language)
 - **Backend**: Node.js v20 (ES Modules) + Express 5.0 (Resilience Layer)
 - **Brain**: Google Gemini AI (1.5 Pro & 2.0 Flash)
 - **Quality**: Vitest (Unit & Component) + Playwright (E2E) with 70%+ coverage
@@ -120,8 +120,11 @@ Response includes:
 - **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the detailed record of architectural iterations.
 - **Design System**: UI powered by custom glass panels, emerald-core gradients, and fluid motion.
 
-## ✨ Latest Features (v0.5.0)
+## ✨ Latest Features (v0.6.0)
 
+- **Modern Minimalist UI**: Complete redesign with light theme, glassmorphism effects, and cyan/blue color palette
+- **Enhanced Spacing & Responsiveness**: Improved margin, padding, and mobile-first responsive design
+- **Glassmorphism Design Language**: Premium backdrop-blur effects and translucent panels throughout
 - **Error Boundary Component**: Gracefully handles component crashes with recovery UI
 - **Custom Hooks Suite**: `useLocalStorage`, `useDebounce`, `useFetch`, `useAsync`, `usePrevious`
 - **Input Validation**: Zod-powered schemas for job injections and resume validation

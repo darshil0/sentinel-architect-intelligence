@@ -44,19 +44,19 @@ const App: React.FC = () => {
   }, [setSelectedJobId]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500/20 overflow-hidden font-inter">
-      {/* Premium Header */}
-      <header className="h-20 border-b border-slate-800/40 px-10 flex items-center justify-between sticky top-0 bg-slate-950/80 backdrop-blur-xl z-[100]">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 text-slate-700 flex flex-col selection:bg-cyan-400/20 overflow-hidden font-inter">
+      {/* Modern Header */}
+      <header className="h-20 border-b border-slate-200/40 px-10 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-2xl z-[100] shadow-sm">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-4 group cursor-default">
-            <div className="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center font-black text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform duration-500">
-              QA
+            <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center font-black text-white shadow-[0_4px_20px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform duration-500">
+              SA
             </div>
             <div>
-              <h1 className="text-sm font-black uppercase tracking-[0.4em] text-white leading-none">
-                Command <span className="text-emerald-500">Center</span>
+              <h1 className="text-sm font-bold uppercase tracking-[0.3em] text-slate-900 leading-none">
+                Architect <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">Hub</span>
               </h1>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5 flex items-center gap-2">
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mt-1.5 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 {masterResume.coreCompetencies.length} Active Tokens
               </p>
@@ -64,14 +64,14 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800/60 font-mono">
+        <div className="flex items-center gap-2 bg-white/60 p-1 rounded-2xl border border-slate-200/60 backdrop-blur-sm font-mono">
           {TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab
-                ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+              className={`px-5 py-2 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-all duration-300 ${activeTab === tab
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_4px_12px_rgba(6,182,212,0.2)]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
             >
               {tab}
@@ -103,10 +103,10 @@ const App: React.FC = () => {
                 {/* Sidebar Feed */}
                 <aside className="w-85 flex flex-col gap-6 shrink-0 overflow-hidden">
                   <div className="flex justify-between items-center px-2">
-                    <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                    <h2 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.3em]">
                       Live Signals
                     </h2>
-                    <span className="text-[10px] font-bold text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/10">
+                    <span className="text-[10px] font-semibold text-cyan-700 bg-cyan-100 px-2 py-0.5 rounded-md border border-cyan-200">
                       {filteredJobs.length} ARCHITECT_TIER
                     </span>
                   </div>
@@ -130,15 +130,15 @@ const App: React.FC = () => {
 
                 {/* Central Analysis */}
                 <section className="flex-grow flex flex-col gap-6 overflow-hidden glass-panel p-1">
-                  <div className="px-8 py-6 border-b border-slate-800/40 flex justify-between items-center bg-slate-900/20">
+                  <div className="px-8 py-6 border-b border-slate-200/40 flex justify-between items-center bg-white/40">
                     <div className="flex items-center gap-4">
-                      <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest font-mono">
+                      <div className="px-3 py-1 bg-cyan-100/60 border border-cyan-200/60 rounded-lg">
+                        <span className="text-[10px] font-bold text-cyan-700 uppercase tracking-widest font-mono">
                           SYNC_VECTOR: {selectedJob.id}
                         </span>
                       </div>
-                      <h2 className="text-lg font-bold text-white tracking-tight">
-                        {selectedJob.company} // <span className="text-slate-400">{selectedJob.title}</span>
+                      <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                        {selectedJob.company} // <span className="text-slate-500">{selectedJob.title}</span>
                       </h2>
                     </div>
                     <button
@@ -165,34 +165,34 @@ const App: React.FC = () => {
 
                   <div className="glass-panel p-8">
                     <div className="flex justify-between items-center mb-8">
-                      <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                      <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.3em]">
                         Intelligence
                       </h3>
                       <button
                         onClick={() => { setEditingJob(selectedJob); setIsModalOpen(true); }}
-                        className="text-[10px] font-black text-emerald-400 hover:text-emerald-300 transition-colors"
+                        className="text-[10px] font-bold text-cyan-600 hover:text-cyan-700 transition-colors"
                       >
                         Edit Signal
                       </button>
                     </div>
                     <div className="space-y-8">
                       <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">
+                        <p className="text-[10px] font-bold text-slate-600 uppercase mb-4 tracking-widest">
                           Key Requirements
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {(selectedJob.highlights ?? []).map((h) => (
-                            <span key={h} className="text-[10px] font-bold text-slate-300 bg-slate-950/50 px-3 py-1.5 rounded-xl border border-slate-800">
+                            <span key={h} className="text-[10px] font-semibold text-slate-700 bg-slate-100/60 px-3 py-1.5 rounded-xl border border-slate-200">
                               {h}
                             </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">
+                        <p className="text-[10px] font-bold text-slate-600 uppercase mb-3 tracking-widest">
                           Audit Trail
                         </p>
-                        <p className="text-xs text-slate-400 leading-relaxed italic bg-slate-950/30 p-4 rounded-2xl border border-slate-800/50">
+                        <p className="text-xs text-slate-600 leading-relaxed italic bg-slate-50/60 p-4 rounded-2xl border border-slate-200/50">
                           "{selectedJob.proof || 'Direct verification pending from source orchestrator.'}"
                         </p>
                       </div>
@@ -206,11 +206,11 @@ const App: React.FC = () => {
               <div className="flex-grow flex gap-6 overflow-x-auto custom-scrollbar pb-12">
                 {STATUSES.map((status) => (
                   <div key={status} className="min-w-[360px] glass-panel flex flex-col overflow-hidden">
-                    <div className="p-6 border-b border-slate-800/60 bg-slate-900/40 flex justify-between items-center">
-                      <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">
+                    <div className="p-6 border-b border-slate-200/40 bg-white/40 flex justify-between items-center">
+                      <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-[0.3em]">
                         {status}
                       </h3>
-                      <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-100/60 px-3 py-1 rounded-full border border-cyan-200/60">
                         {filteredJobs.filter((j) => j.status === status).length}
                       </span>
                     </div>
@@ -257,20 +257,20 @@ const App: React.FC = () => {
                     />
                   </div>
                   <div className="glass-panel p-8">
-                    <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">
+                    <h4 className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.4em] mb-6">
                       Guardrails
                     </h4>
                     <div className="space-y-4 font-mono text-[11px]">
-                      <div className="flex items-center gap-3 text-emerald-400">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+                      <div className="flex items-center gap-3 text-emerald-600">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                         <span>[SYSTEM] Hallucination Lock: ACTIVE</span>
                       </div>
-                      <div className="flex items-center gap-3 text-emerald-400">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+                      <div className="flex items-center gap-3 text-emerald-600">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                         <span>[SYSTEM] Token Intersection: ENFORCED</span>
                       </div>
-                      <div className="flex items-center gap-3 text-slate-500 italic">
-                        <div className="w-2 h-2 rounded-full bg-slate-700" />
+                      <div className="flex items-center gap-3 text-slate-600 italic">
+                        <div className="w-2 h-2 rounded-full bg-slate-400" />
                         <span>[LOG] Profile Integrity: 100% Verified</span>
                       </div>
                     </div>

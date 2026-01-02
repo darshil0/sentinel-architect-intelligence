@@ -2,17 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-01-02
+
+### Added
+- **Error Boundary Component**: New `ErrorBoundary.tsx` wraps the entire application to gracefully handle component crashes and prevent full app failures.
+- **Input Validation System**: Comprehensive validation using Zod schema for job injections and resume parsing with detailed error messages.
+- **Custom Hooks Suite**: New `useCustom.ts` with utilities:
+  - `useLocalStorage` - Type-safe localStorage with optional expiration
+  - `useDebounce` - Debounced value management
+  - `useFetch` - Fetch wrapper with automatic retry logic and error handling
+  - `useAsync` - Generic async operation handler
+  - `usePrevious` - Track previous values
+- **Extended Test Coverage**: 
+  - `DiffViewer.test.tsx` - Tests for hallucination detection and scroll synchronization
+  - `geminiService.test.ts` - Comprehensive API error handling and response validation tests
+  - `ScraperEngine.test.tsx` - Agent simulation and scheduler functionality tests
+- **Health Check Endpoint**: New `/health` endpoint in server for deployment monitoring and uptime verification.
+- **Enhanced Environment Configuration**: Expanded `.env.example` with security warnings and feature flags.
+
+### Changed
+- **Security Hardening**: Removed `GEMINI_API_KEY` from `vite.config.ts` to prevent client-side exposure. API key now server-only.
+- **Server Proxy Configuration**: Added proxy configuration in `vite.config.ts` for secure API communication.
+- **Package Dependencies**: Added `zod` ^3.22.4 for runtime schema validation.
+- **Index Entry Point**: Wrapped app with `ErrorBoundary` in `src/index.tsx`.
+
+### Security
+- Moved API key handling to server-side only - prevents credential leakage
+- All API requests now routed through backend proxy
+- Input validation enforces constraints on job data and resumes
+
 ## [0.4.1] - 2026-01-02
 
 ### Fixed
-- **Type System Integrity**: Removed duplicate `EngineId` type definition in `ScraperEngine.tsx`. The type is now consistently imported from the centralized `@/types` module, eliminating redundancy and potential type mismatches.
-- **Docker Process Management**: Enhanced `Dockerfile` CMD configuration with proper background process handling (`& wait`) to ensure multi-service orchestration stability and prevent premature container exits.
+- **Type System Integrity**: Removed duplicate `EngineId` type definition in `ScraperEngine.tsx`. The type is now consistently imported from the centralized `@/types` module.
+- **Docker Process Management**: Enhanced `Dockerfile` CMD configuration with proper background process handling (`& wait`).
 
 ### Technical Details
 - Commit: `f28f4da` - "fix: resolve type imports and docker configuration"
-- **Files Modified**: 
-  - `src/components/ScraperEngine.tsx`
-  - `Dockerfile`
 
 ## [0.4.0] - 2025-12-30
 

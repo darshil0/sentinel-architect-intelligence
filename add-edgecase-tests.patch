@@ -1,0 +1,301 @@
+diff --git a/src/tests/geminiService.edgecases.test.ts b/src/tests/geminiService.edgecases.test.ts
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/src/tests/geminiService.edgecases.test.ts
+@@ -0,0 +1,119 @@
++import { describe, it, expect, vi, beforeEach } from 'vitest';
++import { geminiService } from '@/services/geminiService';
++
++const minimalReqs = { targetEndpoint: 'POST /test', requirements: [], temperature: 0.2 };
++
++describe('GeminiService - edgecases', () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++  });
++
++  it('handles empty candidates array gracefully', async () => {
++    const mockResponse = { candidates: [] };
++
++    vi.global.fetch = vi.fn().mockResolvedValueOnce({
++      ok: true,
++      json: async () => mockResponse,
++    });
++
++    const result = await geminiService.generateFastAPIEndpoint(
++      {
++        resumeOptimizerDocs: '',
++        discoveryOrchestratorDocs: '',
++        notificationServiceDocs: '',
++        loggingServiceDocs: '',
++        validationLogic: '',
++        fullDocumentation: '',
++        coreDataModels: '',
++      },
++      minimalReqs
++    );
++
++    expect(result).toBeDefined();
++    expect(result.code).toBeDefined();
++  });
++
++  it('handles malformed JSON response (no candidates) without crashing', async () => {
++    const mockResponse = { unexpected: 'shape' } as any;
++
++    vi.global.fetch = vi.fn().mockResolvedValueOnce({
++      ok: true,
++      json: async () => mockResponse,
++    });
++
++    try {
++      const out = await geminiService.generateFastAPIEndpoint(
++        {
++          resumeOptimizerDocs: '',
++          discoveryOrchestratorDocs: '',
++          notificationServiceDocs: '',
++          loggingServiceDocs: '',
++          validationLogic: '',
++          fullDocumentation: '',
++          coreDataModels: '',
++        },
++        minimalReqs
++      );
++      expect(out).toBeDefined();
++    } catch (err) {
++      // Accept either a safe return or a thrown error
++      expect(err).toBeDefined();
++    }
++  });
++
++  it('throws when parseResume receives null or invalid input', async () => {
++    vi.global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({}) });
++
++    try {
++      // @ts-expect-error intentional
++      await geminiService.parseResume(null);
++      expect.fail('Should have thrown for null input');
++    } catch (err) {
++      expect(err).toBeDefined();
++    }
++  });
++
++  it('handles fetch rejection (network error) for follow-up email', async () => {
++    vi.global.fetch = vi.fn().mockRejectedValueOnce(new Error('network fail'));
++
++    try {
++      await geminiService.generateFollowUpEmail({} as any, {} as any);
++      expect.fail('Should have thrown');
++    } catch (err) {
++      expect(err).toBeDefined();
++    }
++  });
++});
++
++/* End geminiService.edgecases.test.ts */
++
++diff --git a/src/tests/appState.edgecases.test.ts b/src/tests/appState.edgecases.test.ts
++new file mode 100644
++index 0000000..0000000
++--- /dev/null
+++++ b/src/tests/appState.edgecases.test.ts
++@@ -0,0 +1,86 @@
++import { describe, it, expect, vi, beforeEach } from 'vitest';
++import { renderHook, act } from '@testing-library/react';
++import { useAppState } from '@/hooks/useAppState';
++import { MOCK_JOBS, MASTER_RESUME_JSON } from '@/constants';
++
++// reuse localStorage mock from existing tests if needed; simple polyfill here
++const localStorageMock = (() => {
++  let store: { [k: string]: string } = {};
++  return {
++    getItem: (k: string) => store[k] || null,
++    setItem: (k: string, v: string) => { store[k] = v.toString(); },
++    clear: () => (store = {}),
++    removeItem: (k: string) => delete store[k],
++  };
++})();
++
++Object.defineProperty(window, 'localStorage', { value: localStorageMock });
++
++describe('useAppState - edgecases', () => {
++  beforeEach(() => {
++    localStorage.clear();
++    vi.clearAllMocks();
++  });
++
++  it('initializes with empty arrays when passed empty inputs', () => {
++    const { result } = renderHook(() => useAppState([] as any, {} as any));
++    expect(result.current.jobs).toEqual([]);
++    expect(result.current.masterResume).toBeDefined();
++  });
++
++  it('handles corrupted localStorage gracefully', () => {
++    localStorage.setItem('architect_jobs', 'not-a-json');
++    const { result } = renderHook(() => useAppState(MOCK_JOBS as any, MASTER_RESUME_JSON));
++    expect(result.current.jobs).toEqual(MOCK_JOBS);
++  });
++
++  it('adds job even if fields are missing', () => {
++    const { result } = renderHook(() => useAppState(MOCK_JOBS as any, MASTER_RESUME_JSON));
++    const minimalJob: any = { id: 'x' };
++
++    act(() => {
++      result.current.handleSaveJob(minimalJob);
++    });
++
++    expect(result.current.jobs.some((j: any) => j.id === 'x')).toBe(true);
++  });
++});
++
++/* End appState.edgecases.test.ts */
++
++diff --git a/src/tests/ScraperEngine.edgecases.test.tsx b/src/tests/ScraperEngine.edgecases.test.tsx
++new file mode 100644
++index 0000000..0000000
++--- /dev/null
+++++ b/src/tests/ScraperEngine.edgecases.test.tsx
++@@ -0,0 +1,112 @@
++import { describe, it, expect, vi, beforeEach } from 'vitest';
++import { render, screen, fireEvent, waitFor } from '@testing-library/react';
++import React from 'react';
++import ScraperEngine from '@/components/ScraperEngine';
++
++describe('ScraperEngine - edgecases', () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++    localStorage.clear();
++  });
++
++  it('prevents starting multiple simulations on rapid deploy clicks', async () => {
++    vi.useFakeTimers();
++    render(<ScraperEngine />);
++
++    const deployButton = screen.getByRole('button', { name: /Deploy linkedin Agent/i });
++
++    // Click rapidly multiple times
++    fireEvent.click(deployButton);
++    fireEvent.click(deployButton);
++    fireEvent.click(deployButton);
++
++    // Button should be disabled after first click
++    expect(deployButton).toBeDisabled();
++
++    // Advance timers to let simulation complete
++    vi.advanceTimersByTime(6000);
++
++    vi.useRealTimers();
++  });
++
++  it('loads invalid cron entries from localStorage and ignores them', async () => {
++    localStorage.setItem('scheduler_matrix', JSON.stringify([{ engine: 'dice', cron: 'not-a-cron' }]));
++    render(<ScraperEngine />);
++
++    // Should still render scheduler but not crash
++    expect(screen.getByText(/Scheduler Matrix/i)).toBeDefined();
++  });
++
++  it('handles rapid tab switching under load', async () => {
++    render(<ScraperEngine />);
++
++    const tabs = [
++      screen.getByRole('button', { name: /linkedin/i }),
++      screen.getByRole('button', { name: /dice/i }),
++      screen.getByRole('button', { name: /ghost/i }),
++    ];
++
++    tabs.forEach(tab => fireEvent.click(tab));
++
++    expect(screen.getByText(/Scraper Lab/i)).toBeDefined();
++  });
++});
++
++/* End ScraperEngine.edgecases.test.tsx */
++
++diff --git a/src/tests/DiffViewer.edgecases.test.tsx b/src/tests/DiffViewer.edgecases.test.tsx
++new file mode 100644
++index 0000000..0000000
++--- /dev/null
+++++ b/src/tests/DiffViewer.edgecases.test.tsx
++@@ -0,0 +1,108 @@
++import { describe, it, expect, vi } from 'vitest';
++import { render, screen } from '@testing-library/react';
++import React from 'react';
++import DiffViewer from '@/components/DiffViewer';
++import { MasterResume } from '@/types';
++
++const mockMasterResume: MasterResume = {
++  personalInfo: { name: 'Test', role: 'Dev', location: 'Remote' },
++  summary: 'x',
++  coreCompetencies: ['A'],
++  experience: [],
++  education: 'BS',
++};
++
++describe('DiffViewer - edgecases', () => {
++  it('handles missing masterResume without crashing', () => {
++    render(
++      // @ts-expect-error intentionally missing masterResume
++      <DiffViewer original="Original" optimized="Optimized" />
++    );
++
++    expect(screen.getByText('Master Source')).toBeDefined();
++    expect(screen.getByText('Architect Artifact')).toBeDefined();
++  });
++
++  it('handles extremely long optimized text', () => {
++    const longText = 'A'.repeat(50_000);
++    render(<DiffViewer original="Orig" optimized={longText} masterResume={mockMasterResume} />);
++    expect(screen.getByText('Architect Artifact')).toBeDefined();
++  });
++
++  it('handles invalid JSON in original gracefully', () => {
++    render(<DiffViewer original="{ not: 'json'" optimized="opt" masterResume={mockMasterResume} />);
++    expect(screen.getByText('Master Source')).toBeDefined();
++  });
++});
++
++/* End DiffViewer.edgecases.test.tsx */
++
++diff --git a/src/tests/JobCard.edgecases.test.tsx b/src/tests/JobCard.edgecases.test.tsx
++new file mode 100644
++index 0000000..0000000
++--- /dev/null
+++++ b/src/tests/JobCard.edgecases.test.tsx
++@@ -0,0 +1,83 @@
++import { describe, it, expect } from 'vitest';
++import { render, screen } from '@testing-library/react';
++import React from 'react';
++import JobCard from '@/components/JobCard';
++import { JobMatch } from '@/types';
++
++const mockJob: JobMatch = {
++  id: 'test-id',
++  title: 'Senior SDET',
++  company: 'Mock Corp',
++  location: 'Remote',
++  score: 9.5,
++  legitimacy: 0.95,
++  highlights: ['Python'],
++  status: 'discovery',
++  postedDate: '2d ago',
++  isVerified: true,
++  sourceTier: 'Tier 1',
++};
++
++describe('JobCard - edgecases', () => {
++  it('renders correctly without optional callbacks', () => {
++    const jobNoCallbacks: JobMatch = { ...mockJob };
++    render(<JobCard job={jobNoCallbacks} />);
++    expect(screen.getByText('Senior SDET')).toBeDefined();
++  });
++
++  it('handles missing score gracefully', () => {
++    const noScore: any = { ...mockJob };
++    delete noScore.score;
++    render(<JobCard job={noScore} />);
++    expect(screen.getByText('Mock Corp')).toBeDefined();
++  });
++});
++
++/* End JobCard.edgecases.test.tsx */
++

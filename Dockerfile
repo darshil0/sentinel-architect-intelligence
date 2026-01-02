@@ -25,4 +25,4 @@ EXPOSE 3001
 EXPOSE 3000
 
 # Script to run both frontend and backend
-CMD ["sh", "-c", "node server/server.js & npx vite preview --host 0.0.0.0 --port 3000"]
+CMD ["sh", "-c", "node server/server.js & npx vite preview --middlewareMode --host 0.0.0.0 --port 3000 & wait"]

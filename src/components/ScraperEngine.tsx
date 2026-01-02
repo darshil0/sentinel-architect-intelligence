@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GHOST_JOB_DETECTOR_SOURCE, ARCHITECT_MASTER_BLUEPRINT } from '@/constants';
 import AgentScheduler from './AgentScheduler';
-import { Schedule } from '@/types';
-
-type EngineId = 'linkedin' | 'dice' | 'ghost';
+import { Schedule, EngineId } from '@/types';
 
 const ScraperEngine: React.FC = () => {
   const [activeEngine, setActiveEngine] = useState<EngineId>('linkedin');

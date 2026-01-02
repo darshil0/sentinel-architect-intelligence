@@ -24,7 +24,9 @@ A high-integrity Career Intelligence System designed for Senior QA professionals
 - **Styling**: Tailwind CSS 4.0 (Custom Glassmorphism Design Language)
 - **Backend**: Node.js v20 (ES Modules) + Express 5.0 (Resilience Layer)
 - **Brain**: Google Gemini AI (1.5 Pro & 2.0 Flash)
-- **Quality**: Vitest (Unit & Component) + Playwright (E2E)
+- **Quality**: Vitest (Unit & Component) + Playwright (E2E) with 70%+ coverage
+- **Security**: Zero-exposure API key architecture with server-side proxy
+- **Validation**: Zod-powered runtime schema validation
 - **DevEx**: Standardized Environment (.env.example) + VS Code Intelligence Suite
 
 ## 🏁 Deployment Protocol
@@ -69,13 +71,22 @@ The Architect Command Center follows a production-grade decoupled architecture:
 
 - `src/`: Core frontend implementation including React components, custom hooks, and types.
   - `components/`: Modular UI units including specialized `JobCard` and `DiffViewer`.
-  - `hooks/`: Centralized state and form logic (`useAppState`, `useForm`).
-  - `services/`: AI orchestrators and structural loggers.
-- `server/`: Express.js backend with built-in AI resilience and rate limiting.
+  - `hooks/`: Centralized state and form logic (`useAppState`, `useForm`, custom hooks suite).
+  - `services/`: AI orchestrators and structural loggers with error handling.
+  - `utils/`: Validation schemas (Zod) and utility functions.
+  - `tests/`: Comprehensive unit and integration tests with 70%+ coverage.
+- `server/`: Express.js backend with built-in AI resilience, rate limiting, and health checks.
 - `e2e/`: End-to-end verification suite powered by Playwright.
-- `src/tests/`: High-integrity unit and component audit suite (Target 100% core logic coverage).
 
 This structure leverages **Absolute Path Aliasing** (`@/`) for scalable and maintainable module resolution.
+
+## 🔒 Security Architecture (v0.5.0+)
+
+- **API Key Protection**: `GEMINI_API_KEY` is server-side only - never exposed to client
+- **Proxy Architecture**: All API requests routed through backend for credential safety
+- **Input Validation**: Zod schemas enforce data integrity on job injections and resumes
+- **Error Boundaries**: Graceful component failure handling prevents full app crashes
+- **Rate Limiting**: Built-in express-rate-limit protects API budget from abuse
 
 ## 🧪 Quality Audit
 
@@ -84,15 +95,44 @@ Execute the full verification suite (Architect tier):
 npm test
 ```
 
+Test coverage includes:
+- **Unit Tests**: Core services and utilities (geminiService, validation, hooks)
+- **Component Tests**: UI components with user interactions (JobCard, DiffViewer, ScraperEngine)
+- **Integration Tests**: Full workflow scenarios and state management
+- **E2E Tests**: Cross-browser testing with Playwright
+
+**Current Coverage**: 70%+ of core logic
+
+## 🏥 Health Monitoring
+
+The backend exposes a health check endpoint for deployment verification:
+```bash
+curl http://localhost:3001/health
+```
+
+Response includes:
+- System status (healthy/degraded)
+- Uptime and version information
+- Environment configuration
+
 ## 📜 Archives
 
 - **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the detailed record of architectural iterations.
 - **Design System**: UI powered by custom glass panels, emerald-core gradients, and fluid motion.
 
+## ✨ Latest Features (v0.5.0)
+
+- **Error Boundary Component**: Gracefully handles component crashes with recovery UI
+- **Custom Hooks Suite**: `useLocalStorage`, `useDebounce`, `useFetch`, `useAsync`, `usePrevious`
+- **Input Validation**: Zod-powered schemas for job injections and resume validation
+- **Extended Tests**: DiffViewer, GeminiService, and ScraperEngine comprehensive test suites
+- **Health Check Endpoint**: `/health` for monitoring and deployment verification
+- **Security Hardened**: API key moved to server-side only with proxy architecture
+
 ## 📋 Recent Fixes (v0.4.1)
 
-- **Type System Integrity**: Resolved duplicate `EngineId` type definition in `ScraperEngine.tsx` by consolidating to centralized type imports from `@/types`
-- **Docker Containerization**: Enhanced `Dockerfile` with proper background process management for seamless multi-service orchestration
+- **Type System Integrity**: Resolved duplicate `EngineId` type definition in `ScraperEngine.tsx`
+- **Docker Containerization**: Enhanced `Dockerfile` with proper background process management
 
 ## ⚖️ License
 

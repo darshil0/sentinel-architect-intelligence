@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2026-01-02
+
+### Fixed
+- **Type System Integrity**: Removed duplicate `EngineId` type definition in `ScraperEngine.tsx`. The type is now consistently imported from the centralized `@/types` module, eliminating redundancy and potential type mismatches.
+- **Docker Process Management**: Enhanced `Dockerfile` CMD configuration with proper background process handling (`& wait`) to ensure multi-service orchestration stability and prevent premature container exits.
+
+### Technical Details
+- Commit: `f28f4da` - "fix: resolve type imports and docker configuration"
+- **Files Modified**: 
+  - `src/components/ScraperEngine.tsx`
+  - `Dockerfile`
+
 ## [0.4.0] - 2025-12-30
 
 ### Added

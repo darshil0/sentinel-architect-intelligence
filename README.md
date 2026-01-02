@@ -89,6 +89,11 @@ npm test
 - **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for the detailed record of architectural iterations.
 - **Design System**: UI powered by custom glass panels, emerald-core gradients, and fluid motion.
 
+## 📋 Recent Fixes (v0.4.1)
+
+- **Type System Integrity**: Resolved duplicate `EngineId` type definition in `ScraperEngine.tsx` by consolidating to centralized type imports from `@/types`
+- **Docker Containerization**: Enhanced `Dockerfile` with proper background process management for seamless multi-service orchestration
+
 ## ⚖️ License
 
 Architect Command Center is distributed under the MIT License.

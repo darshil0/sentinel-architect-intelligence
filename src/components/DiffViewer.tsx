@@ -36,9 +36,11 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
 
   const masterSkillsInventory = useMemo(() => {
     const skills = new Set<string>();
-    masterResume.coreCompetencies.forEach(s => skills.add(s.toLowerCase()));
-    masterResume.experience.forEach(exp => {
-      exp.achievements.forEach(ach => {
+    if (!masterResume) return skills;
+
+    masterResume.coreCompetencies?.forEach(s => skills.add(s.toLowerCase()));
+    masterResume.experience?.forEach(exp => {
+      exp.achievements?.forEach(ach => {
         ach.split(/[\s,.\(\)]+/).forEach(word => {
           if (word.length > 2) skills.add(word.toLowerCase());
         });

@@ -15,7 +15,8 @@ const mockJob: JobMatch = {
     status: 'discovery',
     postedDate: '2d ago',
     isVerified: true,
-    sourceTier: 'Tier 1'
+    isRemote: true,
+    sourceTier: 'Tier 1 - Direct'
 };
 
 describe('JobCard', () => {

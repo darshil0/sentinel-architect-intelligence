@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { JobMatch } from '@/types';
 import { useForm } from '@/hooks/useForm';
 
@@ -23,12 +23,12 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
   editingJob,
   onSave
 }) => {
-  const initialFormState: FormData = {
+  const initialFormState: FormData = useMemo(() => ({
     company: '',
     title: '',
     location: '',
     highlights: '',
-  };
+  }), []);
 
   const { formData, handleChange, setFormData, resetForm } = useForm<FormData>(initialFormState);
 
@@ -79,9 +79,9 @@ const InjectSignalModal: React.FC<InjectSignalModalProps> = ({
       isRemote: formData.location.toLowerCase().includes('remote'),
       postedDate: editingJob?.postedDate ?? 'Just now',
       isVerified: (editingJob?.legitimacy ?? 0.95) >= 0.9,
-      sourceTier: editingJob?.sourceTier ?? 'Tier 2 - Manual',
+      sourceTier: editingJob?.sourceTier ?? 'Tier 2 - Partner',
       status: editingJob?.status ?? 'discovery',
-      personaHint: editingJob?.personaHint ?? 'manual',
+      personaHint: editingJob?.personaHint ?? 'standard',
       proof: editingJob?.proof ?? 'Manual Architect Entry',
       baseSalary: editingJob?.baseSalary ?? 180000,
     };

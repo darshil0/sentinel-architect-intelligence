@@ -49,7 +49,7 @@ describe('GeminiService', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    vi.global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
     try {
       await geminiService.generateFastAPIEndpoint(
@@ -90,7 +90,7 @@ describe('GeminiService', () => {
       ],
     };
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -130,7 +130,7 @@ describe('GeminiService', () => {
       ],
     };
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -145,7 +145,7 @@ describe('GeminiService', () => {
   it('should handle resume parsing from text', async () => {
     const mockResponse = mockMasterResume;
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -160,7 +160,7 @@ describe('GeminiService', () => {
   it('should handle resume parsing from file data', async () => {
     const mockResponse = mockMasterResume;
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -175,7 +175,7 @@ describe('GeminiService', () => {
   });
 
   it('should throw error when API call fails', async () => {
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
@@ -188,12 +188,11 @@ describe('GeminiService', () => {
       expect(error).toBeDefined();
     }
   });
-});
 
   it('handles empty candidates array gracefully', async () => {
     const mockResponse = { candidates: [] };
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -217,7 +216,7 @@ describe('GeminiService', () => {
   it('handles malformed JSON response (no candidates)', async () => {
     const mockResponse = { unexpected: 'shape' } as any;
 
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
     });
@@ -242,7 +241,7 @@ describe('GeminiService', () => {
   });
 
   it('throws when parseResume receives null or invalid input', async () => {
-    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({})
     });
@@ -255,3 +254,4 @@ describe('GeminiService', () => {
       expect(err).toBeDefined();
     }
   });
+});

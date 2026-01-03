@@ -73,6 +73,8 @@ The Architect Command Center follows a production-grade decoupled architecture:
   - `components/`: Modular UI units including specialized `JobCard` and `DiffViewer`.
   - `hooks/`: Centralized state and form logic (`useAppState`, `useForm`, custom hooks suite).
   - `services/`: AI orchestrators and structural loggers with error handling.
+  - `types/`: Centralized type definitions and interfaces.
+  - `constants/`: System-wide constants, configuration, and templates.
   - `utils/`: Validation schemas (Zod) and utility functions.
   - `tests/`: Comprehensive unit and integration tests with 70%+ coverage.
 - `server/`: Express.js backend with built-in AI resilience, rate limiting, and health checks.
@@ -149,8 +151,9 @@ Response includes:
 - **Health Check Endpoint**: `/health` for monitoring and deployment verification
 - **Security Hardened**: API key moved to server-side only with proxy architecture
 
-## 🐛 Patch Fixes (v0.6.2)
+## 🐛 Patch Fixes (v0.6.2 - v0.6.4)
 
+- **Structural Cleanup**: Reorganized `types` and `constants` into dedicated modules; removed deprecated artifacts.
 - **Test Infrastructure**: Fixed test suite syntax and mock configurations (`vi.global` -> `global`)
 - **Type Safety**: Enforced strict Enum usage in UI components
 - **Runtime Stability**: Added guard clauses for AI model responses and component props

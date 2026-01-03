@@ -149,6 +149,13 @@ Response includes:
 - **Health Check Endpoint**: `/health` for monitoring and deployment verification
 - **Security Hardened**: API key moved to server-side only with proxy architecture
 
+## 🐛 Patch Fixes (v0.6.2)
+
+- **Test Infrastructure**: Fixed test suite syntax and mock configurations (`vi.global` -> `global`)
+- **Type Safety**: Enforced strict Enum usage in UI components
+- **Runtime Stability**: Added guard clauses for AI model responses and component props
+- **Data Integrity**: Corrected mocks and verified data structures
+
 ## 📋 Recent Fixes (v0.4.1)
 
 - **Type System Integrity**: Resolved duplicate `EngineId` type definition in `ScraperEngine.tsx`

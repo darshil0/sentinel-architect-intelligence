@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.2] - 2026-01-02
+
+### Patch Release: Codebase Stability & Integrity
+
+Addressed critical technical debt, test infrastructure issues, and runtime safety guards to ensure a robust production-ready foundation.
+
+### Fixed
+- **Test Suite Architecture**: Resolved orphaned test cases in `geminiService.test.ts` and fixed invalid `vi.global` mock syntax to align with standard Vitest patterns.
+- **Type Safety Enforcements**: Corrected `InjectSignalModal` to use strict Enum values for `SourceTier` and `OutreachPersona`, eliminating type mismatches.
+- **Runtime Guardrails**: Implemented defensive coding in `geminiService.ts` (API response parsing) and `DiffViewer.tsx` (prop validation) to prevent crashes from malformed data.
+- **Data Mock Validity**: Updated `JobCard.test.tsx` mocks to include required properties (`isRemote`) and valid enum values.
+- **Performance**: Memoized `initialFormState` in `InjectSignalModal` to prevent unnecessary re-renders.
+
+### Removed
+- **Ghost Files**: Deleted empty/duplicate `components/DiffViewer.tsx` file from the project root.
+
 ## [0.6.0] - 2026-01-02
 
 ### 🚀 Major Release: Modern Minimalist UI Redesign

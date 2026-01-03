@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.4] - 2026-01-02
+
+### Patch Release: Structural Refinement
+
+Enhanced codebase organization by moving core definitions to dedicated directory modules.
+
+### Changed
+- **Folder Structure**: Moved `src/types.ts` to `src/types/index.ts` and `src/constants.ts` to `src/constants/index.ts` for better module scalability.
+- **Naming Convention**: Renamed `appState.test.ts` to `useAppState.test.ts` to strictly match the hook filename.
+
 ## [0.6.3] - 2026-01-02
 
 ### Patch Release: Project Hygiene

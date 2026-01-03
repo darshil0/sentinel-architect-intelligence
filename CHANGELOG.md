@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.5] - 2026-01-02
+
+### Patch Release: Security Architecture Enforcement
+
+Refined environment type definitions to strictly enforce server-side secret isolation.
+
+### Changed
+- **Security**: Removed `GEMINI_API_KEY` from `src/vite-env.d.ts` to prevent misleading client-side access availability signals.
+
 ## [0.6.4] - 2026-01-02
 
 ### Patch Release: Structural Refinement

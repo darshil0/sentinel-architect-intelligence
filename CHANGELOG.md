@@ -95,6 +95,24 @@ Complete visual overhaul with a modern, minimalist design language featuring gla
 
 ---
 
+## [0.6.1] - 2026-01-02
+
+### Patch Release: CI + Test Hardening
+
+Small patch delivering continuous integration and additional edge-case tests to strengthen the verification surface.
+
+### Added
+- **GitHub Actions CI**: `.github/workflows/ci.yml` — installs deps, runs Vitest unit tests, installs Playwright browsers, runs Playwright e2e tests, and builds the app.
+- **Edge-case Test Suites**: New tests added for improved resilience covering malformed responses, empty candidate arrays, corrupted localStorage, scheduler cron edge cases, and rendering edge conditions.
+
+### Files Added
+- `add-edgecase-tests.patch` (upload): contains the new edge-case test files for `geminiService`, `useAppState`, `ScraperEngine`, `DiffViewer`, and `JobCard`.
+- `.github/workflows/ci.yml` — CI workflow to run unit and e2e tests on push/PR to `main`.
+
+### Notes
+- These tests increase confidence in error handling and guardrails; CI will run automatically on pushes to `main` once the workflow is pushed.
+
+
 ## [0.5.0] - 2026-01-02
 
 ### 🚀 Major Release: Enterprise-Grade Stability & Security

@@ -70,3 +70,34 @@ describe('useAppState', () => {
         expect(result.current.activeTab).toBe('kanban');
     });
 });
+
+describe('useAppState edge cases', () => {
+    beforeEach(() => {
+        localStorage.clear();
+        vi.clearAllMocks();
+    });
+
+    it('initializes with empty arrays when passed empty inputs', () => {
+        const { result } = renderHook(() => useAppState([] as any, {} as any));
+        expect(result.current.jobs).toEqual([]);
+        expect(result.current.masterResume).toBeDefined();
+    });
+
+    it('handles corrupted localStorage gracefully', () => {
+        localStorage.setItem('architect_jobs', 'not-a-json');
+        const { result } = renderHook(() => useAppState(MOCK_JOBS as any, MASTER_RESUME_JSON));
+        // Should fall back to provided MOCK_JOBS
+        expect(result.current.jobs).toEqual(MOCK_JOBS);
+    });
+
+    it('adds job even if fields are missing', () => {
+        const { result } = renderHook(() => useAppState(MOCK_JOBS as any, MASTER_RESUME_JSON));
+        const minimalJob: any = { id: 'x' };
+
+        act(() => {
+            result.current.handleSaveJob(minimalJob);
+        });
+
+        expect(result.current.jobs.some((j: any) => j.id === 'x')).toBe(true);
+    });
+});

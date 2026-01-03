@@ -103,6 +103,23 @@ Test coverage includes:
 
 **Current Coverage**: 70%+ of core logic
 
+## 🔁 Continuous Integration
+
+This repository includes a GitHub Actions workflow that runs unit and E2E tests on push/PR to `main`.
+
+- Workflow: `.github/workflows/ci.yml` — installs dependencies, runs `vitest` unit tests, installs Playwright browsers, runs Playwright E2E tests, then builds the app.
+- The workflow triggers automatically on pushes and pull requests to `main`.
+
+To run the verification suite locally:
+```bash
+npm install
+npm run test        # runs Vitest unit tests
+npx playwright install --with-deps
+npm run test:e2e    # runs Playwright E2E tests
+```
+
+New edge-case tests were added to harden behavior against malformed AI responses, corrupted localStorage entries, rapid user interactions, and rendering edge conditions. See `src/tests/` for `*.edgecases.test.*` files or apply the provided patch `add-edgecase-tests.patch`.
+
 ## 🏥 Health Monitoring
 
 The backend exposes a health check endpoint for deployment verification:

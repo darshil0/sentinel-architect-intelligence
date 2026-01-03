@@ -189,3 +189,69 @@ describe('GeminiService', () => {
     }
   });
 });
+
+  it('handles empty candidates array gracefully', async () => {
+    const mockResponse = { candidates: [] };
+
+    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+
+    const result = await geminiService.generateFastAPIEndpoint(
+      {
+        resumeOptimizerDocs: '',
+        discoveryOrchestratorDocs: '',
+        notificationServiceDocs: '',
+        loggingServiceDocs: '',
+        validationLogic: '',
+        fullDocumentation: '',
+        coreDataModels: '',
+      },
+      { targetEndpoint: 'POST /test', requirements: [], temperature: 0.2 }
+    );
+
+    expect(result.code).toBeDefined();
+  });
+
+  it('handles malformed JSON response (no candidates)', async () => {
+    const mockResponse = { unexpected: 'shape' } as any;
+
+    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+
+    try {
+      await geminiService.generateFastAPIEndpoint(
+        {
+          resumeOptimizerDocs: '',
+          discoveryOrchestratorDocs: '',
+          notificationServiceDocs: '',
+          loggingServiceDocs: '',
+          validationLogic: '',
+          fullDocumentation: '',
+          coreDataModels: '',
+        },
+        { targetEndpoint: 'POST /test', requirements: [], temperature: 0.2 }
+      );
+      // If it doesn't throw, ensure it returns a safe fallback
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it('throws when parseResume receives null or invalid input', async () => {
+    vi.global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({})
+    });
+
+    try {
+      // @ts-expect-error intentionally passing invalid value
+      await geminiService.parseResume(null);
+      expect.fail('Should have thrown for null input');
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });

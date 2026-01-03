@@ -112,4 +112,34 @@ describe('DiffViewer', () => {
     const artifact = screen.getByText('Architect Artifact');
     expect(artifact).toBeDefined();
   });
+
+  it('handles missing masterResume without crashing', () => {
+    render(
+      <DiffViewer
+        original="Original"
+        optimized="Optimized"
+        // @ts-expect-error intentionally missing masterResume
+      />
+    );
+
+    expect(screen.getByText('Master Source')).toBeDefined();
+    expect(screen.getByText('Architect Artifact')).toBeDefined();
+  });
+
+  it('handles extremely long optimized text', () => {
+    const longText = 'A'.repeat(50_000);
+    render(
+      <DiffViewer original="Orig" optimized={longText} masterResume={mockMasterResume} />
+    );
+
+    expect(screen.getByText('Architect Artifact')).toBeDefined();
+  });
+
+  it('handles invalid JSON in original gracefully', () => {
+    render(
+      <DiffViewer original="{ not: 'json'" optimized="opt" masterResume={mockMasterResume} />
+    );
+
+    expect(screen.getByText('Master Source')).toBeDefined();
+  });
 });

@@ -109,4 +109,32 @@ describe('ScraperEngine', () => {
     // Should still be functional
     expect(screen.getByText(/Scraper Lab/i)).toBeDefined();
   });
+
+  it('prevents starting multiple simulations on rapid deploy clicks', async () => {
+    vi.useFakeTimers();
+    render(<ScraperEngine />);
+
+    const deployButton = screen.getByRole('button', { name: /Deploy linkedin Agent/i });
+
+    // Click rapidly multiple times
+    fireEvent.click(deployButton);
+    fireEvent.click(deployButton);
+    fireEvent.click(deployButton);
+
+    // Button should be disabled after first click
+    expect(deployButton).toBeDisabled();
+
+    // Advance timers to let simulation complete
+    vi.advanceTimersByTime(6000);
+
+    vi.useRealTimers();
+  });
+
+  it('loads invalid cron entries from localStorage and ignores them', async () => {
+    localStorage.setItem('scheduler_matrix', JSON.stringify([{ engine: 'dice', cron: 'not-a-cron' }]));
+    render(<ScraperEngine />);
+
+    // Should still render scheduler but not crash
+    expect(screen.getByText(/Scheduler Matrix/i)).toBeDefined();
+  });
 });

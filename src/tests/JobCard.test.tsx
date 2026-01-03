@@ -54,3 +54,18 @@ describe('JobCard', () => {
         expect(onFollowUp).toHaveBeenCalledWith(staleJob);
     });
 });
+
+describe('JobCard edge cases', () => {
+    it('renders correctly without optional callbacks', () => {
+        const jobNoCallbacks: JobMatch = { ...mockJob };
+        render(<JobCard job={jobNoCallbacks} />);
+        expect(screen.getByText('Senior SDET')).toBeDefined();
+    });
+
+    it('handles missing score gracefully', () => {
+        const noScore: any = { ...mockJob };
+        delete noScore.score;
+        render(<JobCard job={noScore} />);
+        expect(screen.getByText('Mock Corp')).toBeDefined();
+    });
+});

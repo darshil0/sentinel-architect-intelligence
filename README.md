@@ -151,8 +151,9 @@ Response includes:
 - **Health Check Endpoint**: `/health` for monitoring and deployment verification
 - **Security Hardened**: API key moved to server-side only with proxy architecture
 
-## 🐛 Patch Fixes (v0.6.2 - v0.6.4)
+## 🐛 Patch Fixes (v0.6.2 - v0.6.5)
 
+- **Security Architecture**: Enforced strict server-side secret isolation by removing misleading client-side type definitions.
 - **Structural Cleanup**: Reorganized `types` and `constants` into dedicated modules; removed deprecated artifacts.
 - **Test Infrastructure**: Fixed test suite syntax and mock configurations (`vi.global` -> `global`)
 - **Type Safety**: Enforced strict Enum usage in UI components

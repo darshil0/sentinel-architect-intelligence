@@ -118,7 +118,7 @@ npx playwright install --with-deps
 npm run test:e2e    # runs Playwright E2E tests
 ```
 
-New edge-case tests were added to harden behavior against malformed AI responses, corrupted localStorage entries, rapid user interactions, and rendering edge conditions. See `src/tests/` for `*.edgecases.test.*` files or apply the provided patch `add-edgecase-tests.patch`.
+New edge-case tests were added to harden behavior against malformed AI responses, corrupted localStorage entries, rapid user interactions, and rendering edge conditions. See `src/tests/` for the implementation.
 
 ## 🏥 Health Monitoring
 

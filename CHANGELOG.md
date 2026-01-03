@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.3] - 2026-01-02
+
+### Patch Release: Project Hygiene
+
+Finalized project structure cleanup to align with standard architectural patterns.
+
+### Removed
+- **Artifact Cleanup**: Removed transient `add-edgecase-tests.patch` file as tests are now fully integrated.
+- **Structural Cleanup**: Removed redundant root-level `components/` directory (orphaned artifact).
+
 ## [0.6.2] - 2026-01-02
 
 ### Patch Release: Codebase Stability & Integrity
